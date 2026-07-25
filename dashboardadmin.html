@@ -10,7 +10,26 @@
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
+    <!-- Firebase Config -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AiZaSyAi4_8Lsy6J3CTEU9LxFDEnppMuVEZSVF0",
+        authDomain: "crmthandong-ee4db.firebaseapp.com",
+        databaseURL: "https://crmthandong-ee4db-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "crmthandong-ee4db",
+        storageBucket: "crmthandong-ee4db.firebasestorage.app",
+        messagingSenderId: "639923839375",
+        appId: "1:639923839375:web:1439554eca26cbaedd6bfa",
+        measurementId: "G-TX4K73RGPP"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
     <style>
         :root {
             --primary-orange: #FF6B00;
@@ -753,7 +772,8 @@
     /* ==========================================================================
        0. KHỞI TẠO CƠ SỞ DỮ LIỆU DÙNG CHUNG (CENTRAL DATABASE SYSTEM)
        ========================================================================== */
-    const DB = {
+   
+ const DB = {
         accounts: [
             { email: "admin@thandong.com", pass: "Rich@2007", role: "admin" },
             { email: "luctv@thandong.com", pass: "123456", role: "teacher" }
