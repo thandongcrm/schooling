@@ -29,7 +29,6 @@
         
         .app-container { display: flex; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; min-height: calc(100vh - 30px); }
         
-        /* Sidebar tông màu cam chủ đạo */
         .sidebar { width: 280px; background: linear-gradient(180deg, #FF6B00 0%, #E05D00 100%); color: white; padding: 24px 16px; display: flex; flex-direction: column; border-right: 3px solid rgba(255,255,255,0.2); }
         .brand-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
         .brand-title { font-size: 22px; font-weight: 800; color: white; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -209,7 +208,6 @@
                 </div>
             </div>
 
-            <!-- Thẻ thống kê lương đồng bộ từ hệ thống Admin -->
             <div class="salary-summary-grid">
                 <div class="salary-card">
                     <div class="card-title">Hình Thức & Lương Định Mức</div>
@@ -243,7 +241,6 @@
                 </div>
             </div>
 
-            <!-- Chi tiết các ca dạy trong tháng -->
             <div class="salary-table-container">
                 <h3 style="font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 15px;"><i class="fa-solid fa-list-check"></i> Chi Tiết Các Ca Dạy Đã Điểm Danh Trong Tháng</h3>
                 <table class="custom-table">
@@ -257,9 +254,7 @@
                             <th>Đơn giá / Thù lao</th>
                         </tr>
                     </thead>
-                    <tbody id="sal-detail-rows">
-                        <!-- JS render -->
-                    </tbody>
+                    <tbody id="sal-detail-rows"></tbody>
                 </table>
             </div>
         </div>
@@ -303,43 +298,57 @@
     </div>
 </div>
 
-<!-- JS JAVASCRIPT HỆ THỐNG -->
-<script>
-    const DB = {
-        branches: JSON.parse(localStorage.getItem('TD_BRANCHES')) || [
-            { id: 'CN001', name: 'Chi Nhánh Buôn Ma Thuột' }
-        ],
-        teachers: JSON.parse(localStorage.getItem('TD_TEACHERS')) || [
-            { 
-                id: 'GV001', 
-                name: 'Trần Thị B', 
-                email: 'teacher1@thandong.com', 
-                pass: '123456', 
-                type: 'Full time', 
-                baseSalary: 7840000,
-                allowance: 500000,
-                allowanceNote: 'Phụ cấp gửi xe, chuyên cần',
-                deduction: 200000,
-                deductionNote: 'Nghỉ phép quá quy định',
-                perSlotSalary: 150000
-            }
-        ],
-        timetable: JSON.parse(localStorage.getItem('TD_TIMETABLE')) || [
-            { id: 'SL001', date: new Date().toISOString().split('T')[0], startTime: '08:00', endTime: '08:30', teacherId: 'GV001', subject: 'Toán', subjectType: 'Chính', branchId: 'CN001', classRoom: 'Lớp 10A1', attended: true, studentsCount: 18 }
-        ],
-        reload: function() {
-            this.branches = JSON.parse(localStorage.getItem('TD_BRANCHES')) || this.branches;
-            this.teachers = JSON.parse(localStorage.getItem('TD_TEACHERS')) || this.teachers;
-            this.timetable = JSON.parse(localStorage.getItem('TD_TIMETABLE')) || this.timetable;
+<!-- FIREBASE SDK & JS HỆ THỐNG -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAi4_8Lsy6J3CTEU9LxFDEnppMuVEZSVF0",
+        authDomain: "crmthandong-ee4db.firebaseapp.com",
+        databaseURL: "https://crmthandong-ee4db-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "crmthandong-ee4db",
+        storageBucket: "crmthandong-ee4db.firebasestorage.app",
+        messagingSenderId: "639923839375",
+        appId: "1:639923839375:web:1439554eca26cbaedd6bfa",
+        measurementId: "G-TX4K73RGPP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.DB = {
+        branches: [{ id: 'CN001', name: 'Chi Nhánh Buôn Ma Thuột' }],
+        teachers: [{ id: 'GV001', name: 'Trần Thị B', email: 'teacher1@thandong.com', pass: '123456', type: 'Full time', baseSalary: 7840000, allowance: 500000, allowanceNote: 'Phụ cấp gửi xe', deduction: 200000, deductionNote: 'Nghỉ phép', perSlotSalary: 150000 }],
+        timetable: [],
+        
+        initCloud: function() {
+            // Đồng bộ dữ liệu realtime từ Firebase về
+            onValue(ref(database, 'TD_BRANCHES'), (snapshot) => {
+                if(snapshot.exists()) this.branches = snapshot.val();
+            });
+            onValue(ref(database, 'TD_TEACHERS'), (snapshot) => {
+                if(snapshot.exists()) this.teachers = snapshot.val();
+                if(window.TeacherApp && window.TeacherApp.currentTeacher) {
+                    window.TeacherApp.renderTimetable();
+                }
+            });
+            onValue(ref(database, 'TD_TIMETABLE'), (snapshot) => {
+                if(snapshot.exists()) this.timetable = snapshot.val();
+                if(window.TeacherApp && window.TeacherApp.currentTeacher) {
+                    window.TeacherApp.renderTimetable();
+                }
+            });
         },
+
         save: function() {
-            localStorage.setItem('TD_BRANCHES', JSON.stringify(this.branches));
-            localStorage.setItem('TD_TEACHERS', JSON.stringify(this.teachers));
-            localStorage.setItem('TD_TIMETABLE', JSON.stringify(this.timetable));
+            set(ref(database, 'TD_BRANCHES'), this.branches);
+            set(ref(database, 'TD_TEACHERS'), this.teachers);
+            set(ref(database, 'TD_TIMETABLE'), this.timetable);
         }
     };
 
-    const CoreSystem = {
+    window.CoreSystem = {
         closeModal: function(id) { document.getElementById(id).classList.remove('active'); },
         getISOWeekString: function(d) {
             const date = new Date(d.getTime());
@@ -359,21 +368,18 @@
         }
     };
 
-    const TeacherApp = {
+    window.TeacherApp = {
         currentTeacher: null,
         currentAttendanceSlotId: null,
 
         login: function(e) {
             e.preventDefault();
-            DB.reload();
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
 
-            // Xác thực chính xác giáo viên dựa trên email và mật khẩu lưu trong localStorage của hệ thống Admin
-            const t = DB.teachers.find(item => item.email && item.email.toLowerCase() === email.toLowerCase());
+            const t = window.DB.teachers.find(item => item.email && item.email.toLowerCase() === email.toLowerCase());
             
             if (t) {
-                // Kiểm tra mật khẩu (nếu giáo viên chưa có trường pass trong localStorage thì mặc định chấp nhận hoặc dùng '123456')
                 const teacherPass = t.pass || '123456';
                 if (pass === teacherPass) {
                     this.currentTeacher = t;
@@ -391,7 +397,7 @@
                     alert('Mật khẩu không chính xác!');
                 }
             } else {
-                alert('Không tìm thấy giáo viên với email này trong hệ thống Quản trị!');
+                alert('Không tìm thấy giáo viên với email này trong hệ thống Quản trị Cloud!');
             }
         },
 
@@ -422,10 +428,8 @@
         },
 
         renderTimetable: function() {
-            DB.reload();
             if(!this.currentTeacher) return;
-            // Lấy dữ liệu mới nhất của giáo viên đang đăng nhập từ DB.teachers
-            this.currentTeacher = DB.teachers.find(item => item.id === this.currentTeacher.id) || this.currentTeacher;
+            this.currentTeacher = window.DB.teachers.find(item => item.id === this.currentTeacher.id) || this.currentTeacher;
             
             const grid = document.getElementById('t-timetableGrid');
             grid.innerHTML = '';
@@ -439,8 +443,7 @@
                 currDate.setDate(firstDayOfWeek.getDate() + i);
                 const dateStr = currDate.toISOString().split('T')[0];
 
-                // Lọc đúng các ca dạy của giáo viên hiện tại theo teacherId liên kết trong TD_TIMETABLE
-                let daySlots = DB.timetable.filter(s => s.date === dateStr && s.teacherId === this.currentTeacher.id);
+                let daySlots = window.DB.timetable.filter(s => s.date === dateStr && s.teacherId === this.currentTeacher.id);
 
                 const morningSlots = daySlots.filter(s => parseInt(s.startTime.split(':')[0]) < 12);
                 const afternoonSlots = daySlots.filter(s => parseInt(s.startTime.split(':')[0]) >= 12);
@@ -448,7 +451,7 @@
                 const renderSlotsGroup = (slots) => {
                     if (slots.length === 0) return '<div style="font-size:11px; color:#9CA3AF; text-align:center; padding:10px 0;">-- Trống --</div>';
                     return slots.map(s => {
-                        const b = DB.branches.find(item => item.id === s.branchId);
+                        const b = window.DB.branches.find(item => item.id === s.branchId);
                         return `
                             <div class="slot-card ${s.attended ? 'attended' : ''}">
                                 <div style="font-weight:800; color:var(--primary-orange); display:flex; justify-content:space-between;">
@@ -494,9 +497,8 @@
         },
 
         renderSalaryReport: function() {
-            DB.reload();
             if(!this.currentTeacher) return;
-            this.currentTeacher = DB.teachers.find(t => t.id === this.currentTeacher.id) || this.currentTeacher;
+            this.currentTeacher = window.DB.teachers.find(t => t.id === this.currentTeacher.id) || this.currentTeacher;
             
             const monthVal = document.getElementById('s-monthSelector').value;
             if(!monthVal) return;
@@ -509,8 +511,7 @@
             const deduction = teacher.deduction || 0;
             const deductionNote = teacher.deductionNote || 'Không có';
 
-            // Lọc toàn bộ ca dạy của giáo viên trong tháng
-            const monthSlots = DB.timetable.filter(s => {
+            const monthSlots = window.DB.timetable.filter(s => {
                 return s.teacherId === teacher.id && s.date.startsWith(monthVal);
             });
 
@@ -518,22 +519,16 @@
             const attendedSlots = monthSlots.filter(s => s.attended === true);
             const taughtCount = attendedSlots.length;
 
-            // Tính toán lương dựa trên hình thức Full time / Part time
             let teachingPay = 0;
             const isFullTime = typeWork.toLowerCase().includes('full');
             if (isFullTime) {
-                if (assigned > 0) {
-                    teachingPay = (baseOrRate / assigned) * taughtCount;
-                } else {
-                    teachingPay = 0;
-                }
+                teachingPay = assigned > 0 ? (baseOrRate / assigned) * taughtCount : 0;
             } else {
                 teachingPay = baseOrRate * taughtCount;
             }
 
             const netSalary = teachingPay + allowance - deduction;
 
-            // Đổ dữ liệu vào bảng thông tin
             document.getElementById('sal-type-base').innerHTML = `${typeWork} <span style="color:var(--primary-orange);">(${CoreSystem.formatMoney(baseOrRate)})</span>`;
             document.getElementById('sal-assigned-slots').innerText = `${assigned} ca`;
             document.getElementById('sal-taught-slots').innerText = `${taughtCount} ca`;
@@ -551,7 +546,7 @@
             }
 
             tbody.innerHTML = attendedSlots.map(s => {
-                const b = DB.branches.find(item => item.id === s.branchId);
+                const b = window.DB.branches.find(item => item.id === s.branchId);
                 let singleSlotFee = isFullTime ? (assigned > 0 ? baseOrRate / assigned : 0) : baseOrRate;
                 return `
                     <tr>
@@ -567,14 +562,11 @@
         },
 
         exportExcelSalary: function() {
-            DB.reload();
             const monthVal = document.getElementById('s-monthSelector').value;
             const teacher = this.currentTeacher;
             const nowStr = new Date().toLocaleString('vi-VN');
 
-            const monthSlots = DB.timetable.filter(s => {
-                return s.teacherId === teacher.id && s.date.startsWith(monthVal);
-            });
+            const monthSlots = window.DB.timetable.filter(s => s.teacherId === teacher.id && s.date.startsWith(monthVal));
             const assigned = monthSlots.length;
             const attendedSlots = monthSlots.filter(s => s.attended === true);
             const taughtCount = attendedSlots.length;
@@ -688,7 +680,7 @@
 
         openAttendanceModal: function(id) {
             this.currentAttendanceSlotId = id;
-            const slot = DB.timetable.find(s => s.id === id);
+            const slot = window.DB.timetable.find(s => s.id === id);
             document.getElementById('t-attendanceStudents').value = slot && slot.studentsCount > 0 ? slot.studentsCount : 15;
             document.getElementById('t-modalAttendance').classList.add('active');
         },
@@ -699,12 +691,11 @@
                 alert('Số học sinh phải là số hợp lệ lớn hơn 0!');
                 return;
             }
-            DB.reload();
-            const slot = DB.timetable.find(s => s.id === this.currentAttendanceSlotId);
+            const slot = window.DB.timetable.find(s => s.id === this.currentAttendanceSlotId);
             if(slot) {
                 slot.attended = true;
                 slot.studentsCount = count;
-                DB.save();
+                window.DB.save();
                 CoreSystem.closeModal('t-modalAttendance');
                 this.renderTimetable();
             }
@@ -726,17 +717,19 @@
                 return alert('Mật khẩu mới và mật khẩu xác nhận không khớp nhau!');
             }
 
-            DB.reload();
-            const t = DB.teachers.find(item => item.id === this.currentTeacher.id);
+            const t = window.DB.teachers.find(item => item.id === this.currentTeacher.id);
             if (t) {
                 t.pass = pNew;
                 this.currentTeacher.pass = pNew;
-                DB.save();
-                alert('Đổi mật khẩu thành công!');
+                window.DB.save();
+                alert('Đổi mật khẩu thành công trên Cloud!');
                 CoreSystem.closeModal('t-modalChangePass');
             }
         }
     };
+
+    // Khởi tạo kết nối Cloud
+    window.DB.initCloud();
 </script>
 </body>
 </html>
