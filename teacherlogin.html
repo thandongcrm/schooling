@@ -301,7 +301,7 @@
 <!-- FIREBASE SDK & JS HỆ THỐNG -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAi4_8Lsy6J3CTEU9LxFDEnppMuVEZSVF0",
@@ -321,30 +321,35 @@
         branches: [{ id: 'CN001', name: 'Chi Nhánh Buôn Ma Thuột' }],
         teachers: [{ id: 'GV001', name: 'Trần Thị B', email: 'teacher1@thandong.com', pass: '123456', type: 'Full time', baseSalary: 7840000, allowance: 500000, allowanceNote: 'Phụ cấp gửi xe', deduction: 200000, deductionNote: 'Nghỉ phép', perSlotSalary: 150000 }],
         timetable: [],
+        manualStudents: [],
+        salaryAdjustments: [],
         
         initCloud: function() {
-            // Đồng bộ dữ liệu realtime từ Firebase về
-            onValue(ref(database, 'TD_BRANCHES'), (snapshot) => {
-                if(snapshot.exists()) this.branches = snapshot.val();
-            });
-            onValue(ref(database, 'TD_TEACHERS'), (snapshot) => {
-                if(snapshot.exists()) this.teachers = snapshot.val();
-                if(window.TeacherApp && window.TeacherApp.currentTeacher) {
-                    window.TeacherApp.renderTimetable();
-                }
-            });
-            onValue(ref(database, 'TD_TIMETABLE'), (snapshot) => {
-                if(snapshot.exists()) this.timetable = snapshot.val();
-                if(window.TeacherApp && window.TeacherApp.currentTeacher) {
-                    window.TeacherApp.renderTimetable();
+            // Đồng bộ dữ liệu realtime từ node crm_thandong_data dùng chung cho Admin và Teacher
+            onValue(ref(database, 'crm_thandong_data'), (snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    if(data.branches) this.branches = data.branches;
+                    if(data.teachers) this.teachers = data.teachers;
+                    if(data.timetable) this.timetable = data.timetable;
+                    if(data.manualStudents) this.manualStudents = data.manualStudents;
+                    if(data.salaryAdjustments) this.salaryAdjustments = data.salaryAdjustments;
+
+                    if(window.TeacherApp && window.TeacherApp.currentTeacher) {
+                        window.TeacherApp.renderTimetable();
+                    }
                 }
             });
         },
 
         save: function() {
-            set(ref(database, 'TD_BRANCHES'), this.branches);
-            set(ref(database, 'TD_TEACHERS'), this.teachers);
-            set(ref(database, 'TD_TIMETABLE'), this.timetable);
+            set(ref(database, 'crm_thandong_data'), {
+                branches: this.branches,
+                teachers: this.teachers,
+                timetable: this.timetable,
+                manualStudents: this.manualStudents,
+                salaryAdjustments: this.salaryAdjustments
+            });
         }
     };
 
