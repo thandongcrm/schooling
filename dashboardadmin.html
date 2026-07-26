@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Thần Đồng - Quản Trị Hệ Thống</title>
+    <!-- Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- Firebase Config -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AiZaSyAi4_8Lsy6J3CTEU9LxFDEnppMuVEZSVF0",
+        authDomain: "crmthandong-ee4db.firebaseapp.com",
+        databaseURL: "https://crmthandong-ee4db-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "crmthandong-ee4db",
+        storageBucket: "crmthandong-ee4db.firebasestorage.app",
+        messagingSenderId: "639923839375",
+        appId: "1:639923839375:web:1439554eca26cbaedd6bfa",
+        measurementId: "G-TX4K73RGPP"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+    </script>
+    <style>
+        :root {
+            --primary-orange: #FF6B00;
+            --primary-green: #10B981;
+            --dark-orange: #E05D00;
+            --light-orange-bg: #FFF5EE;
+            --white: #FFFFFF;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: linear-gradient(135deg, #FF7A00 0%, #FF5500 100%); min-height: 100vh; display: flex; color: var(--gray-800); padding: 15px; }
+        
+        .app-container { display: flex; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; min-height: calc(100vh - 30px); }
+        .sidebar { width: 280px; background: #111827; color: white; padding: 24px 16px; display: flex; flex-direction: column; border-right: 3px solid var(--primary-orange); }
+        .brand-header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #374151; }
+        .brand-title { font-size: 22px; font-weight: 800; color: var(--primary-orange); letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .brand-subtitle { font-size: 12px; color: var(--primary-green); font-weight: 700; margin-top: 4px; }
+        
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+        .nav-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; color: #9CA3AF; }
+        .nav-item:hover, .nav-item.active { background: linear-gradient(90deg, var(--primary-orange) 0%, #FF8800 100%); color: white; box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3); transform: translateX(4px); }
+
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; background: #FAFAFA; }
+        .header-title { font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; font-size: 14px; }
+        .btn-primary { background: var(--primary-orange); color: white; }
+        .btn-green { background: var(--primary-green); color: white; }
+        .btn-danger { background: #EF4444; color: white; }
+        .btn-secondary { background: #6B7280; color: white; }
+
+        .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 16px; border: 2px solid var(--gray-200); box-shadow: var(--shadow); cursor: pointer; transition: all 0.3s ease; }
+        .stat-card:hover { border-color: var(--primary-orange); transform: translateY(-4px); }
+        .stat-title { font-size: 13px; color: #6B7280; font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-size: 28px; font-weight: 800; color: var(--primary-orange); margin: 10px 0 5px 0; }
+        .stat-desc { font-size: 12px; color: var(--primary-green); font-weight: 600; }
+
+        .table-container { background: white; border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--gray-200); margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #FFF0E6; color: var(--primary-orange); padding: 14px 16px; font-weight: 700; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #FFD8C2; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--gray-200); font-size: 14px; vertical-align: middle; }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-active { background: #D1FAE5; color: #065F46; }
+        .status-inactive { background: #FEE2E2; color: #991B1B; }
+
+        @keyframes shakeLight {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+            75% { transform: rotate(-1deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .shake-hover {
+            display: inline-block;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .shake-hover:hover {
+            animation: shakeLight 0.4s ease-in-out infinite;
+            color: var(--primary-orange);
+        }
+
+        /* TIMETABLE STYLES */
+        .timetable-controls { background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
+        .timetable-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-column { background: white; border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; min-height: 480px; display: flex; flex-direction: column; }
+        .day-header { background: var(--primary-orange); color: white; text-align: center; padding: 10px; font-weight: 700; font-size: 13px; }
+        .session-block { flex: 1; padding: 8px; border-bottom: 1px dashed var(--gray-200); }
+        .session-title { font-size: 11px; font-weight: 800; color: var(--primary-orange); text-transform: uppercase; margin-bottom: 6px; text-align: center; background: #FFF5EE; padding: 3px; border-radius: 4px; }
+        .slot-card { background: #FFF5EE; border-left: 4px solid var(--primary-orange); padding: 10px; margin-bottom: 8px; border-radius: 8px; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .slot-card.attended { border-left-color: var(--primary-green); background: #F0FDF4; border-right: 1px solid #BBF7D0; }
+        .attendance-badge-highlight {
+            background: #10B981;
+            color: white;
+            font-weight: 800;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 999; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; width: 100%; max-width: 900px; border-radius: 20px; padding: 25px; max-height: 90vh; overflow-y: auto; border: 2px solid var(--primary-orange); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: 800; color: var(--primary-orange); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-control { padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 14px; outline: none; }
+
+        .modal-cam-box { background: #FFFFFF; border: 3px solid var(--primary-orange); border-radius: 24px; box-shadow: 0 20px 50px rgba(255, 107, 0, 0.25); width: 100%; max-width: 420px; padding: 28px; text-align: center; }
+        .modal-cam-header { background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); color: white; margin: -28px -28px 20px -28px; padding: 20px; border-radius: 20px 20px 0 0; font-weight: 800; font-size: 18px; }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; border-radius: 10px; background: white; border: 2px solid var(--gray-200); font-weight: 700; cursor: pointer; }
+        .tab-btn.active { background: var(--primary-green); color: white; border-color: var(--primary-green); }
+        
+        .info-cell { font-size: 13px; line-height: 1.5; }
+        .info-cell div { display: flex; align-items: center; gap: 6px; }
+
+        .weekday-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
+        .weekday-checkboxes label { background: var(--gray-100); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .weekday-checkboxes input:checked + span { color: var(--primary-orange); font-weight: 800; }
+
+        .multiselect-container { border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 8px 12px; max-height: 150px; overflow-y: auto; background: white; }
+        .multiselect-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 1px dashed var(--gray-100); }
+        .multiselect-item:last-child { border-bottom: none; }
+        .multiselect-item input { accent-color: var(--primary-orange); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- THANH MENU ĐIỀU HƯỚNG CHÍNH -->
+    <div class="sidebar">
+        <div class="brand-header">
+            <div class="brand-title"><i class="fa-solid fa-graduation-cap"></i> THẦN ĐỒNG</div>
+            <div class="brand-subtitle">HỆ THỐNG NỘI BỘ</div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="CoreSystem.switchTab('overview')"><i class="fa-solid fa-chart-pie"></i> 1. TỔNG QUAN</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('branch')"><i class="fa-solid fa-code-branch"></i> 2. CHI NHÁNH</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('teacher')"><i class="fa-solid fa-user-tie"></i> 3. GIÁO VIÊN</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('timetable')"><i class="fa-solid fa-calendar-days"></i> 4. THỜI KHÓA BIỂU</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('report')"><i class="fa-solid fa-file-invoice-dollar"></i> 5. BÁO CÁO</li>
+            <li class="nav-item" onclick="Module6_UserPass.openModal()"><i class="fa-solid fa-key"></i> 6. ĐỔI MẬT KHẨU</li>
+            <li class="nav-item" style="margin-top: auto; color: #EF4444;" onclick="CoreSystem.logout()"><i class="fa-solid fa-right-from-bracket"></i> ĐĂNG XUẤT</li>
+        </ul>
+    </div>
+
+    <!-- KHU VỰC HIỂN THỊ NỘI DUNG VIEW -->
+    <div class="main-content">
+        
+        <!-- VIEW 1: TỔNG QUAN HỆ THỐNG -->
+        <div id="overview-section" class="section-view active">
+            <div class="header-title"><span>1. Tổng Quan Hệ Thống</span></div>
+            <div class="overview-grid">
+                <div class="stat-card" onclick="Module1_Overview.showDetail('totalBranch')">
+                    <div class="stat-title">Tổng Số Chi Nhánh</div>
+                    <div class="stat-value" id="m1-total-branches">0</div>
+                    <div class="stat-desc">Xem tất cả chi nhánh</div>
+                </div>
+                <div class="stat-card" onclick="Module1_Overview.showDetail('activeBranch')">
+                    <div class="stat-title">Chi Nhánh Hoạt Động</div>
+                    <div class="stat-value" id="m1-active-branches" style="color:var(--primary-green);">0</div>
+                    <div class="stat-desc">Có lịch dạy trong tháng</div>
+                </div>
+                <div class="stat-card" onclick="Module1_Overview.showDetail('inactiveBranch')">
+                    <div class="stat-title">Chi Nhánh Chưa Hoạt Động</div>
+                    <div class="stat-value" id="m1-inactive-branches" style="color:#EF4444;">0</div>
+                    <div class="stat-desc">Chưa tạo lịch dạy</div>
+                </div>
+                <div class="stat-card" onclick="Module1_Overview.showDetail('totalTeachers')">
+                    <div class="stat-title">Tổng Số Giáo Viên</div>
+                    <div class="stat-value" id="m1-total-teachers">0</div>
+                    <div class="stat-desc">Đang quản lý trong hệ thống</div>
+                </div>
+                <div class="stat-card" onclick="Module1_Overview.showDetail('totalSlots')">
+                    <div class="stat-title">Tổng Số Ca Dạy (Tháng)</div>
+                    <div class="stat-value" id="m1-total-slots">0</div>
+                    <div class="stat-desc">Tất cả lịch phân công</div>
+                </div>
+                <div class="stat-card" onclick="Module1_Overview.showDetail('estSalary')">
+                    <div class="stat-title">Dự Chi Lương Tháng</div>
+                    <div class="stat-value" id="m1-est-salary" style="font-size:20px; color:#8B5CF6;">0 VNĐ</div>
+                    <div class="stat-desc">Tính toán dựa trên số ca</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: QUẢN LÝ CHI NHÁNH -->
+        <div id="branch-section" class="section-view">
+            <div class="header-title">
+                <span>2. Quản Lý Chi Nhánh</span>
+                <button class="btn btn-primary" onclick="Module2_Branch.openAddModal()"><i class="fa-solid fa-plus"></i> Thêm Chi Nhánh</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th><th>Mã CN</th><th>Tên Chi Nhánh</th><th>Danh Sách Lớp</th><th>Thông Tin</th><th>Thiết Bị</th><th>Học Phí</th><th>Trạng Thái</th><th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m2-branch-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 3: QUẢN LÝ GIÁO VIÊN -->
+        <div id="teacher-section" class="section-view">
+            <div class="header-title">
+                <span>3. Quản Lý Giáo Viên</span>
+                <button class="btn btn-primary" onclick="Module3_Teacher.openAddModal()"><i class="fa-solid fa-user-plus"></i> Thêm Giáo Viên</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã GV</th>
+                            <th>Họ và Tên</th>
+                            <th>Thông Tin Cá Nhân & Ngân Hàng</th>
+                            <th>Môn Dạy (Chính / Phụ)</th>
+                            <th>Chi Nhánh / Hợp Đồng</th>
+                            <th>Bằng Cấp & Giáo Cụ</th>
+                            <th>Lương Định Mức</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m3-teacher-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 4: THỜI KHÓA BIỂU -->
+        <div id="timetable-section" class="section-view">
+            <div class="header-title"><span>4. Quản Lý Thời Khóa Biểu</span></div>
+            <div class="timetable-controls">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn btn-secondary" onclick="Module4_Timetable.changeWeek(-1)"><i class="fa-solid fa-chevron-left"></i> Tuần trước</button>
+                    <button class="btn btn-primary" onclick="Module4_Timetable.setToCurrentWeek()"><i class="fa-solid fa-calendar-day"></i> Tuần này</button>
+                    <input type="week" id="m4-weekSelector" class="form-control" onchange="Module4_Timetable.render()">
+                    <button class="btn btn-secondary" onclick="Module4_Timetable.changeWeek(1)">Tuần sau <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <select id="m4-filterBranch" class="form-control" onchange="Module4_Timetable.render()"><option value="">-- Lọc Chi Nhánh --</option></select>
+                    <select id="m4-filterTeacher" class="form-control" onchange="Module4_Timetable.render()"><option value="">-- Lọc Giáo Viên --</option></select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-green" onclick="Module4_Timetable.copyPreviousWeekSchedule()"><i class="fa-solid fa-copy"></i> Sao Chép Lịch Tuần Trước</button>
+                    <button class="btn btn-danger" onclick="Module4_Timetable.clearCurrentWeekSchedule()"><i class="fa-solid fa-trash-can"></i> Xóa Lịch Tuần Này</button>
+                    <button class="btn btn-primary" onclick="Module4_Timetable.openAddModal()"><i class="fa-solid fa-plus"></i> Thêm Ca Dạy</button>
+                </div>
+            </div>
+            <div class="timetable-grid" id="m4-timetableGrid"></div>
+        </div>
+
+        <!-- VIEW 5: BÁO CÁO HỆ THỐNG -->
+        <div id="report-section" class="section-view">
+            <div class="header-title">
+                <span>5. Báo Cáo & Thống Kê</span>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <label style="font-size: 14px; font-weight: 700;">Chọn Tháng:</label>
+                    <input type="month" id="m5-reportMonth" class="form-control" onchange="Module5_Report.render()">
+                    <button class="btn btn-green" onclick="Module5_Report.exportAllExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Tất Cả Excel</button>
+                </div>
+            </div>
+            <div class="tab-buttons">
+                <button class="tab-btn active" id="m5-btn-tab-branch" onclick="Module5_Report.switchSubTab('branch')">Báo Cáo Chi Nhánh</button>
+                <button class="tab-btn" id="m5-btn-tab-salary" onclick="Module5_Report.switchSubTab('salary')">Báo Cáo Tiền Lương</button>
+            </div>
+            
+            <!-- BÁO CÁO CHI NHÁNH -->
+            <div id="m5-report-branch-view" class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>STT</th><th>Tên Chi Nhánh</th><th>Thông Tin</th><th>Số Lớp</th><th>Số Học Sinh</th><th>Học Phí</th><th>Doanh Thu</th><th>Số Tiết Dạy</th><th>Thao Tác</th></tr>
+                    </thead>
+                    <tbody id="m5-report-branch-body"></tbody>
+                </table>
+            </div>
+
+            <!-- BÁO CÁO TIỀN LƯƠNG -->
+            <div id="m5-report-salary-view" class="table-container" style="display: none;">
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Phụ cấp & Khấu trừ tự động lưu chuyển từ tháng trước. Nhập > 0 phải điền ghi chú.</span>
+                    <button class="btn btn-green" onclick="Module5_Report.exportSalaryExcel()"><i class="fa-solid fa-file-excel"></i> Tải Excel Báo Cáo Lương</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã GV</th>
+                            <th>Tên Giáo Viên</th>
+                            <th>Thông Tin</th>
+                            <th>Hình Thức</th>
+                            <th>Lương Định Mức</th>
+                            <th>Ca Đã Giao</th>
+                            <th>Ca Đã DD</th>
+                            <th>Lương Dạy</th>
+                            <th>Phụ Cấp</th>
+                            <th>Khấu Trừ</th>
+                            <th>Lương Thực Nhận</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m5-report-salary-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= MODAL CỦA CÁC MỤC CON ================= -->
+
+<!-- MODAL CỦA MỤC 1 (HIỂN THỊ CHI TIẾT TỔNG QUAN) -->
+<div class="modal-overlay" id="m1-modalDetail">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="m1-detailTitle">Chi Tiết Thông Tin</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m1-modalDetail')"></i>
+        </div>
+        <div id="m1-detailBody"></div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m1-modalDetail')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POPUP DANH SÁCH CHI TIẾT CHI NHÁNH -->
+<div class="modal-overlay" id="m5-modalBranchDetail">
+    <div class="modal-box" style="max-width: 800px;">
+        <div class="modal-header">
+            <div class="modal-title" id="m5-branchDetailTitle">Chi Tiết Ca Dạy - Chi Nhánh</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m5-modalBranchDetail')"></i>
+        </div>
+        <div class="table-container" style="max-height: 450px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Ca Dạy</th>
+                        <th>Lớp Dạy</th>
+                        <th>Tên Giáo Viên</th>
+                        <th>Đã Điểm Danh Chưa</th>
+                        <th>Số Học Sinh</th>
+                    </tr>
+                </thead>
+                <tbody id="m5-branchDetailBody"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalBranchDetail')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POPUP DANH SÁCH CHI TIẾT GIÁO VIÊN -->
+<div class="modal-overlay" id="m5-modalTeacherDetail">
+    <div class="modal-box" style="max-width: 850px;">
+        <div class="modal-header">
+            <div class="modal-title" id="m5-teacherDetailTitle">Chi Tiết Lịch Dạy Giáo Viên</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m5-modalTeacherDetail')"></i>
+        </div>
+        <div class="table-container" style="max-height: 450px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Thời Gian Dạy</th>
+                        <th>Chi Nhánh</th>
+                        <th>Lớp</th>
+                        <th>Đã Điểm Danh</th>
+                        <th>Số HS Điểm Danh</th>
+                    </tr>
+                </thead>
+                <tbody id="m5-teacherDetailBody"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalTeacherDetail')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CỦA MỤC 2 (CHI NHÁNH) -->
+<div class="modal-overlay" id="m2-modalBranch">
+    <div class="modal-box" style="max-width: 950px;">
+        <div class="modal-header">
+            <div class="modal-title" id="m2-modalTitle">Thêm Chi Nhánh</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m2-modalBranch')"></i>
+        </div>
+        <form onsubmit="Module2_Branch.save(event)">
+            <input type="hidden" id="m2-branchId">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Mã CN (Tự sinh)</label>
+                    <input type="text" id="m2-branchCode" class="form-control" readonly style="background-color: #f3f4f6;">
+                </div>
+                <div class="form-group">
+                    <label>Tên Chi Nhánh (*)</label>
+                    <input type="text" id="m2-branchName" class="form-control" required placeholder="Nhập tên chi nhánh">
+                </div>
+                <div class="form-group">
+                    <label>Người Đại Diện (*)</label>
+                    <input type="text" id="m2-branchRep" class="form-control" required placeholder="Họ và tên người đại diện">
+                </div>
+                <div class="form-group">
+                    <label>Điện Thoại (*)</label>
+                    <input type="text" id="m2-branchPhone" class="form-control" required placeholder="Số điện thoại liên hệ">
+                </div>
+                <div class="form-group">
+                    <label>Mã Số Thuế (*)</label>
+                    <input type="text" id="m2-branchMst" class="form-control" required placeholder="Mã số thuế chi nhánh">
+                </div>
+                <div class="form-group">
+                    <label>Học Phí / Tháng (VNĐ) (*)</label>
+                    <input type="number" id="m2-branchFee" class="form-control" required min="0" placeholder="VD: 1500000">
+                </div>
+                <div class="form-group">
+                    <label>Tỉnh / Thành Phố (*)</label>
+                    <select id="m2-branchProvince" class="form-control" onchange="Module2_Branch.onProvinceChange()" required>
+                        <option value="Đắk Lắk">Đắk Lắk</option>
+                        <option value="Phú Yên">Phú Yên</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Khu Vực (Huyện/Thị xã/Thành phố) (*)</label>
+                    <select id="m2-branchDistrict" class="form-control" required></select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Địa Chỉ (Trước sáp nhập)</label>
+                    <input type="text" id="m2-branchAddressOld" class="form-control" placeholder="Nhập địa chỉ cũ trước khi sáp nhập">
+                </div>
+                <div class="form-group full-width">
+                    <label>Địa Chỉ (Sau sáp nhập) (*)</label>
+                    <input type="text" id="m2-branchAddressNew" class="form-control" required placeholder="Nhập địa chỉ mới hành chính sau sáp nhập">
+                </div>
+                <div class="form-group full-width">
+                    <label>Trạng Thái</label>
+                    <select id="m2-branchStatus" class="form-control">
+                        <option value="Đang hoạt động">Đang hoạt động</option>
+                        <option value="Chưa hoạt động">Chưa hoạt động</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-school"></i> Danh Sách Lớp Học Dạy Tại Chi Nhánh
+                </div>
+                <div style="display: flex; gap: 10px; background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <input type="text" id="m2-classNameInput" class="form-control" placeholder="VD: Lớp 10A1, Lớp Tiếng Anh 1, Lớp Mầm 2..." style="flex:1;">
+                    <button type="button" class="btn btn-green" onclick="Module2_Branch.addClassToList()"><i class="fa-solid fa-plus"></i> Thêm Lớp</button>
+                </div>
+
+                <div class="table-container" style="margin-top: 12px;">
+                    <table>
+                        <thead>
+                            <tr style="background: #F3F4F6; color: #374151;">
+                                <th style="width: 80px;">STT</th><th>Tên Lớp Học</th><th style="width: 120px; text-align:center;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m2-class-list-body">
+                            <tr><td colspan="3" style="text-align:center; color:#9CA3AF;">Chưa có lớp học nào được thêm</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- THIẾT BỊ ĐẦU TƯ -->
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-laptop-house"></i> Thêm Thiết Bị Đầu Tư
+                </div>
+                <div class="form-grid" style="background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <div class="form-group"><label>Tên Thiết Bị</label><input type="text" id="m2-equipName" class="form-control" placeholder="VD: Máy chiếu Panasonic"></div>
+                    <div class="form-group"><label>Số Lượng</label><input type="number" id="m2-equipQty" class="form-control" min="1" value="1"></div>
+                    <div class="form-group"><label>Ngày Bắt Đầu Gửi</label><input type="date" id="m2-equipStartDate" class="form-control"></div>
+                    <div class="form-group"><label>Ngày Hết Hạn</label><input type="date" id="m2-equipEndDate" class="form-control"></div>
+                    <div class="form-group full-width" style="text-align: right; margin-bottom: 0;">
+                        <button type="button" class="btn btn-green" onclick="Module2_Branch.addDeviceToList()"><i class="fa-solid fa-plus"></i> Thêm Vào Danh Sách Thiết Bị</button>
+                    </div>
+                </div>
+
+                <div class="table-container" style="margin-top: 12px;">
+                    <table>
+                        <thead>
+                            <tr style="background: #F3F4F6; color: #374151;">
+                                <th>STT</th><th>Tên Thiết Bị</th><th>Số Lượng</th><th>Ngày Bắt Đầu</th><th>Ngày Hết Hạn</th><th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="m2-device-list-body">
+                            <tr><td colspan="6" style="text-align:center; color:#9CA3AF;">Chưa có thiết bị nào được chọn</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('m2-modalBranch')">Hủy Lưu Chi Nhánh</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu Chi Nhánh</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL CỦA MỤC 3 (GIÁO VIÊN) -->
+<div class="modal-overlay" id="m3-modalTeacher">
+    <div class="modal-box" style="max-width: 950px;">
+        <div class="modal-header">
+            <div class="modal-title" id="m3-modalTitle">Thêm Giáo Viên Mới</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m3-modalTeacher')"></i>
+        </div>
+        <form onsubmit="Module3_Teacher.save(event)">
+            <input type="hidden" id="m3-teacherId">
+            <div class="form-grid">
+                <div class="form-group"><label>Mã GV (Tự sinh)</label><input type="text" id="m3-teacherCode" class="form-control" readonly style="background-color: #f3f4f6;"></div>
+                <div class="form-group"><label>Họ và Tên (*)</label><input type="text" id="m3-teacherName" class="form-control" required placeholder="Nhập đầy đủ họ và tên"></div>
+                <div class="form-group">
+                    <label>Tỉnh / Thành Phố (*)</label>
+                    <select id="m3-teacherProvince" class="form-control" onchange="Module3_Teacher.onProvinceChange()" required>
+                        <option value="Đắk Lắk">Đắk Lắk</option>
+                        <option value="Phú Yên">Phú Yên</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Khu Vực (Huyện/Thị xã/Thành phố) (*)</label><select id="m3-teacherDistrict" class="form-control" required></select></div>
+                <div class="form-group full-width"><label>Địa Chỉ (Trước sáp nhập)</label><input type="text" id="m3-teacherAddressOld" class="form-control" placeholder="Nhập địa chỉ cũ trước sáp nhập"></div>
+                <div class="form-group full-width"><label>Địa Chỉ (Sau sáp nhập) (*)</label><input type="text" id="m3-teacherAddressNew" class="form-control" required placeholder="Nhập địa chỉ mới hành chính"></div>
+                <div class="form-group"><label>Điện Thoại (*)</label><input type="text" id="m3-teacherPhone" class="form-control" required placeholder="Số điện thoại liên lạc"></div>
+                <div class="form-group"><label>Email (*)</label><input type="email" id="m3-teacherEmail" class="form-control" required placeholder="Email đăng nhập"></div>
+                <div class="form-group"><label>Mật Khẩu Mặc Định (*)</label><input type="text" id="m3-teacherPassword" class="form-control" required value="123456"></div>
+                <div class="form-group"><label>Số CCCD / CMND (*)</label><input type="text" id="m3-teacherCccd" class="form-control" required placeholder="Nhập 12 số Căn cước công dân"></div>
+                <div class="form-group"><label>Ngày Sinh (*)</label><input type="date" id="m3-teacherDob" class="form-control" required></div>
+                <div class="form-group"><label>Số Tài Khoản Ngân Hàng (*)</label><input type="text" id="m3-teacherStk" class="form-control" required placeholder="Nhập STK nhận lương"></div>
+                <div class="form-group"><label>Ngân Hàng (*)</label><input type="text" id="m3-teacherBank" class="form-control" required placeholder="VD: Vietcombank, MBBank..."></div>
+                <div class="form-group"><label>Môn Dạy Chính (*)</label><input type="text" id="m3-teacherSubjectMain" class="form-control" required placeholder="VD: Toán Chuyên, Tiếng Anh"></div>
+                <div class="form-group"><label>Môn Dạy Phụ</label><input type="text" id="m3-teacherSubjectSub" class="form-control" placeholder="VD: Lý, Hóa, Rèn chữ"></div>
+                
+                <!-- ĐIỀU CHỈNH CHỌN 1, NHIỀU HẶC TẤT CẢ CHI NHÁNH -->
+                <div class="form-group full-width">
+                    <label>Phân Chi Nhánh (*) <small style="color:var(--primary-orange); font-weight:600;">(Chọn 1, nhiều hoặc tất cả chi nhánh)</small></label>
+                    <div style="margin-bottom: 6px;">
+                        <label style="font-size: 13px; font-weight: 700; cursor: pointer; color: var(--primary-orange);">
+                            <input type="checkbox" id="m3-teacherBranchSelectAll" onchange="Module3_Teacher.toggleSelectAllBranches(this)"> Chọn Tất Cả Chi Nhánh
+                        </label>
+                    </div>
+                    <div class="multiselect-container" id="m3-teacherBranchContainer"></div>
+                </div>
+
+                <div class="form-group"><label>Loại Hợp Đồng (*)</label><select id="m3-teacherType" class="form-control"><option value="Full time">Full time</option><option value="Part time">Part time</option></select></div>
+                <div class="form-group"><label>Lương Định Mức (VNĐ) (*)</label><input type="number" id="m3-teacherBaseSalary" class="form-control" required min="0" placeholder="Nhập lương cơ bản"></div>
+                <div class="form-group"><label>Trạng Thái</label><select id="m3-teacherStatus" class="form-control"><option value="Đang làm việc">Đang làm việc</option><option value="Tạm nghỉ">Tạm nghỉ</option><option value="Đã nghỉ việc">Đã nghỉ việc</option></select></div>
+            </div>
+
+            <!-- BẰNG CẤP -->
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-certificate"></i> Danh Sách Bằng Cấp / Chứng Chỉ
+                </div>
+                <div class="form-grid" style="background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <div class="form-group"><label>Tên Bằng Cấp / Chứng Chỉ</label><input type="text" id="m3-degreeName" class="form-control" placeholder="VD: Cử nhân Sư phạm Toán, IELTS 7.5"></div>
+                    <div class="form-group"><label>Nơi Cấp / Trường Đào Tạo</label><input type="text" id="m3-degreeIssuer" class="form-control" placeholder="VD: ĐH Sư Phạm TP.HCM"></div>
+                    <div class="form-group"><label>Năm Cấp</label><input type="number" id="m3-degreeYear" class="form-control" placeholder="VD: 2022" min="1970" max="2030"></div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <button type="button" class="btn btn-green" onclick="Module3_Teacher.addDegreeToList()"><i class="fa-solid fa-plus"></i> Thêm Bằng Cấp</button>
+                    </div>
+                </div>
+                <div class="table-container" style="margin-top: 12px;">
+                    <table>
+                        <thead>
+                            <tr style="background: #F3F4F6; color: #374151;"><th>STT</th><th>Tên Bằng Cấp / Chứng Chỉ</th><th>Nơi Cấp</th><th>Năm Cấp</th><th>Thao Tác</th></tr>
+                        </thead>
+                        <tbody id="m3-degree-list-body">
+                            <tr><td colspan="5" style="text-align:center; color:#9CA3AF;">Chưa có bằng cấp nào được thêm</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- GIÁO CỤ -->
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-toolbox"></i> Giáo Cụ Phát Cho Giáo Viên
+                </div>
+                <div class="form-grid" style="background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <div class="form-group"><label>Tên Giáo Cụ</label><input type="text" id="m3-toolName" class="form-control" placeholder="VD: Bộ Flashcard, Bảng Từ"></div>
+                    <div class="form-group"><label>Số Lượng</label><input type="number" id="m3-toolQty" class="form-control" min="1" value="1"></div>
+                    <div class="form-group"><label>Ngày Nhận</label><input type="date" id="m3-toolReceiveDate" class="form-control"></div>
+                    <div class="form-group"><label>Ngày Trả</label><input type="date" id="m3-toolReturnDate" class="form-control"></div>
+                    <div class="form-group full-width"><label>Tình Trạng Giáo Cụ Lúc Trả</label><input type="text" id="m3-toolReturnStatus" class="form-control" placeholder="VD: Mới 100%, Bình thường..."></div>
+                    <div class="form-group full-width" style="text-align: right; margin-bottom: 0;">
+                        <button type="button" class="btn btn-green" onclick="Module3_Teacher.addToolToList()"><i class="fa-solid fa-plus"></i> Thêm Giáo Cụ</button>
+                    </div>
+                </div>
+                <div class="table-container" style="margin-top: 12px;">
+                    <table>
+                        <thead>
+                            <tr style="background: #F3F4F6; color: #374151;"><th>STT</th><th>Tên Giáo Cụ</th><th>Số Lượng</th><th>Ngày Nhận</th><th>Ngày Trả</th><th>Tình Trạng Lúc Trả</th><th>Thao Tác</th></tr>
+                        </thead>
+                        <tbody id="m3-tool-list-body">
+                            <tr><td colspan="7" style="text-align:center; color:#9CA3AF;">Chưa có giáo cụ nào được thêm</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('m3-modalTeacher')">Hủy Lưu Giáo Viên</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu Giáo Viên</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL MỤC 4: THÊM / SỬA CA DẠY -->
+<div class="modal-overlay" id="m4-modalSlot">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title" id="m4-modalTitle">Thêm Ca Dạy Mới</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m4-modalSlot')"></i>
+        </div>
+        <form onsubmit="Module4_Timetable.save(event)">
+            <input type="hidden" id="m4-slotId">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Hình Thức Chọn Ngày Dạy (*)</label>
+                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 5px;">
+                        <label style="font-size: 13px;"><input type="radio" name="m4-dateType" value="date" checked onchange="Module4_Timetable.toggleDateType()"> Chọn theo Ngày Cụ Thể</label>
+                        <label style="font-size: 13px;"><input type="radio" name="m4-dateType" value="weekday" onchange="Module4_Timetable.toggleDateType()"> Chọn theo Các Thứ Trong Tuần</label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width" id="m4-groupSpecificDate">
+                    <label>Chọn Ngày Dạy (*)</label>
+                    <input type="date" id="m4-slotDate" class="form-control">
+                </div>
+
+                <div class="form-group full-width" id="m4-groupWeekdays" style="display: none;">
+                    <label>Chọn Các Thứ Trong Tuần Lặp Lại (*)</label>
+                    <div class="weekday-checkboxes">
+                        <label><input type="checkbox" class="m4-cb-day" value="1"> <span>Thứ 2</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="2"> <span>Thứ 3</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="3"> <span>Thứ 4</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="4"> <span>Thứ 5</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="5"> <span>Thứ 6</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="6"> <span>Thứ 7</span></label>
+                        <label><input type="checkbox" class="m4-cb-day" value="0"> <span>Chủ Nhật</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Chọn Chi Nhánh (*)</label>
+                    <select id="m4-slotBranch" class="form-control" onchange="Module4_Timetable.onBranchChange()" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Lớp Học (*)</label>
+                    <select id="m4-slotClass" class="form-control" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Giờ Bắt Đầu (*)</label>
+                    <input type="time" id="m4-slotStartTime" class="form-control" list="time-suggestions" required onchange="Module4_Timetable.autoSuggestEndTime()">
+                </div>
+
+                <div class="form-group">
+                    <label>Giờ Kết Thúc (*)</label>
+                    <input type="time" id="m4-slotEndTime" class="form-control" list="time-suggestions" required>
+                </div>
+
+                <datalist id="time-suggestions"></datalist>
+
+                <div class="form-group">
+                    <label>Chọn Giáo Viên (Theo Chi Nhánh) (*)</label>
+                    <select id="m4-slotTeacher" class="form-control" required onchange="Module4_Timetable.onTeacherChange()"></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Loại Môn Học (*)</label>
+                    <select id="m4-slotSubjectType" class="form-control" onchange="Module4_Timetable.onSubjectTypeChange()">
+                        <option value="Chính">Môn Chính</option>
+                        <option value="Phụ">Môn Phụ</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Tên Môn Học (*)</label>
+                    <input type="text" id="m4-slotSubject" class="form-control" placeholder="VD: Toán Chuyên, Tiếng Anh..." required>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('m4-modalSlot')">Hủy Lưu</button>
+                <button type="submit" class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> Lưu Ca Dạy</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL ĐIỂM DANH HỘ CỦA MỤC 4 -->
+<div class="modal-overlay" id="m4-modalAttendance">
+    <div class="modal-cam-box">
+        <div class="modal-cam-header">
+            <i class="fa-solid fa-clipboard-user"></i> ĐIỂM DANH HỘ
+        </div>
+        <p style="font-size: 13px; color: #6B7280; margin-bottom: 15px;">Vui lòng nhập số học sinh tham gia thực tế để hoàn tất điểm danh:</p>
+        <div class="form-group">
+            <label style="font-size: 14px; font-weight: 700; color: var(--primary-orange);">Số Học Sinh Tham Gia (*):</label>
+            <input type="number" id="m4-attendanceStudents" class="form-control" min="1" value="15" style="text-align: center; font-size: 24px; font-weight: 800; color: var(--primary-orange); border: 2px solid var(--primary-orange);" required>
+        </div>
+        <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="CoreSystem.closeModal('m4-modalAttendance')">Hủy Bỏ</button>
+            <button class="btn btn-primary" style="flex: 1;" onclick="Module4_Timetable.confirmAttendance()"><i class="fa-solid fa-check"></i> Xác Nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CỦA MỤC 6 (ĐỔI MẬT KHẨU) -->
+<div class="modal-overlay" id="m6-modalChangePass">
+    <div class="modal-box" style="max-width: 450px;">
+        <div class="modal-header">
+            <div class="modal-title">6. Đổi Mật Khẩu Tài Khoản</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m6-modalChangePass')"></i>
+        </div>
+        <form onsubmit="Module6_UserPass.save(event)">
+            <div class="form-group"><label>Chọn Tài Khoản Email</label><select id="m6-passAccountSelect" class="form-control" onchange="Module6_UserPass.autoFillOldPass()" required></select></div>
+            <div class="form-group"><label>Mật Khẩu Hiện Tại</label><input type="text" id="m6-passOld" class="form-control" readonly></div>
+            <div class="form-group"><label>Mật Khẩu Mới</label><input type="password" id="m6-passNew" class="form-control" required></div>
+            <div class="form-group"><label>Xác Nhận Mật Khẩu Mới</label><input type="password" id="m6-passConfirm" class="form-control" required></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('m6-modalChangePass')">Hủy</button>
+                <button type="submit" class="btn btn-primary">Xác Nhận Đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= JS JAVASCRIPT HỆ THỐNG MODULE (KẾT NỐI FIREBASE FIREBASE REALTIME DATABASE) ================= -->
+<script>
+    /* ==========================================================================
+       0. KHỞI TẠO CƠ SỞ DỮ LIỆU ĐỒNG BỘ WEB (FIREBASE REALTIME DATABASE)
+       ========================================================================== */
+    const DB = {
+        accounts: [
+            { email: "admin@thandong.com", pass: "Rich@2007", role: "admin" },
+            { email: "luctv@thandong.com", pass: "123456", role: "teacher" }
+        ],
+        branches: [],
+        teachers: [],
+        timetable: [],
+        manualStudents: {},
+        salaryAdjustments: {},
+
+        // Khởi tạo lắng nghe dữ liệu thời gian thực từ Firebase Realtime Database
+        initFirebaseListeners: function() {
+            const defaultBranches = [
+                { 
+                    id: 'CN001', 
+                    name: 'Chi Nhánh Buôn Ma Thuột', 
+                    rep: 'Nguyễn Văn A', 
+                    phone: '0912345678', 
+                    mst: '6001234567', 
+                    province: 'Đắk Lắk', 
+                    district: 'TP. Buôn Ma Thuột', 
+                    addressOld: '123 Lê Duẩn, P. Tân Thành', 
+                    addressNew: '123 Lê Duẩn, TP. Buôn Ma Thuột', 
+                    classList: ['Lớp 10A1', 'Lớp 10A2', 'Lớp Tiếng Anh Giao Tiếp'], 
+                    fee: 1500000, 
+                    status: 'Đang hoạt động',
+                    devices: [
+                        { id: 'EQ_101', name: 'Máy chiếu Panasonic', qty: 2, startDate: '2026-01-10', endDate: '2028-01-10' }
+                    ]
+                },
+                { 
+                    id: 'CN002', 
+                    name: 'Chi Nhánh Krông Pắc', 
+                    rep: 'Trần Văn C', 
+                    phone: '0935123456', 
+                    mst: '6007654321', 
+                    province: 'Đắk Lắk', 
+                    district: 'Huyện Krông Pắc', 
+                    addressOld: '45 Giải Phóng, TT. Phước An', 
+                    addressNew: '45 Giải Phóng, Huyện Krông Pắc', 
+                    classList: ['Lớp 11B1', 'Lớp Rèn Chữ'], 
+                    fee: 1200000, 
+                    status: 'Chưa hoạt động',
+                    devices: []
+                }
+            ];
+
+            const defaultTeachers = [
+                { 
+                    id: 'GV001', 
+                    name: 'Trần Thị B', 
+                    province: 'Đắk Lắk',
+                    district: 'TP. Buôn Ma Thuột',
+                    addressOld: '45 Nguyễn Tất Thành',
+                    addressNew: '45 Nguyễn Tất Thành, TP. Buôn Ma Thuột',
+                    phone: '0987654321', 
+                    dob: '1995-05-15',
+                    email: 'teacher1@thandong.com', 
+                    pass: '123456', 
+                    cccd: '060195001234',
+                    stk: '1012345678',
+                    bank: 'Vietcombank',
+                    subjectMain: 'Toán',
+                    subjectSub: 'Tiếng Anh',
+                    subjects: 'Toán, Tiếng Anh', 
+                    branchIds: ['CN001', 'CN002'], 
+                    branchId: 'CN001',
+                    type: 'Full time', 
+                    baseSalary: 10000000,
+                    status: 'Đang làm việc',
+                    degrees: [
+                        { id: 'DEG_1', name: 'Cử nhân Sư phạm Toán', issuer: 'ĐH Tây Nguyên', year: '2017' }
+                    ],
+                    tools: [
+                        { id: 'TOOL_1', name: 'Bộ Flashcard Tiếng Anh', qty: 2, receiveDate: '2026-01-15', returnDate: '2026-06-15', returnStatus: 'Tốt' }
+                    ]
+                }
+            ];
+
+            const defaultTimetable = [
+                { id: 'SL001', date: new Date().toISOString().split('T')[0], startTime: '08:00', endTime: '08:30', teacherId: 'GV001', subject: 'Toán', subjectType: 'Chính', branchId: 'CN001', classRoom: 'Lớp 10A1', attended: true, studentsCount: 18 },
+                { id: 'SL002', date: new Date().toISOString().split('T')[0], startTime: '14:00', endTime: '15:30', teacherId: 'GV001', subject: 'Tiếng Anh', subjectType: 'Phụ', branchId: 'CN001', classRoom: 'Lớp 10A2', attended: false, studentsCount: 0 }
+            ];
+
+            // Lắng nghe dữ liệu Chi Nhánh
+            database.ref('branches').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.branches = Array.isArray(data) ? data : Object.values(data);
+                } else {
+                    this.branches = defaultBranches;
+                    database.ref('branches').set(defaultBranches);
+                }
+                CoreSystem.refreshAllModules();
+            });
+
+            // Lắng nghe dữ liệu Giáo Viên
+            database.ref('teachers').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.teachers = Array.isArray(data) ? data : Object.values(data);
+                } else {
+                    this.teachers = defaultTeachers;
+                    database.ref('teachers').set(defaultTeachers);
+                }
+                CoreSystem.refreshAllModules();
+            });
+
+            // Lắng nghe dữ liệu Thời Khóa Biểu
+            database.ref('timetable').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.timetable = Array.isArray(data) ? data : Object.values(data);
+                } else {
+                    this.timetable = defaultTimetable;
+                    database.ref('timetable').set(defaultTimetable);
+                }
+                CoreSystem.refreshAllModules();
+            });
+
+            // Lắng nghe dữ liệu Số Học Sinh Nhập Tay
+            database.ref('manualStudents').on('value', (snapshot) => {
+                this.manualStudents = snapshot.val() || {};
+                CoreSystem.refreshAllModules();
+            });
+
+            // Lắng nghe dữ liệu Phụ Cấp / Khấu Trừ Lương
+            database.ref('salaryAdjustments').on('value', (snapshot) => {
+                this.salaryAdjustments = snapshot.val() || {};
+                CoreSystem.refreshAllModules();
+            });
+        },
+
+        // Đồng bộ dữ liệu lên Firebase
+        save: function() {
+            database.ref('branches').set(this.branches);
+            database.ref('teachers').set(this.teachers);
+            database.ref('timetable').set(this.timetable);
+            database.ref('manualStudents').set(this.manualStudents);
+            database.ref('salaryAdjustments').set(this.salaryAdjustments);
+        }
+    };
+
+    /* ==========================================================================
+       CORE SYSTEM
+       ========================================================================== */
+    const CoreSystem = {
+        init: function() {
+            document.getElementById('m4-weekSelector').value = this.getISOWeekString(new Date());
+            document.getElementById('m5-reportMonth').value = new Date().toISOString().slice(0, 7);
+            DB.initFirebaseListeners();
+        },
+        refreshAllModules: function() {
+            Module1_Overview.render();
+            Module2_Branch.render();
+            Module3_Teacher.render();
+            Module4_Timetable.render();
+            Module5_Report.render();
+        },
+        switchTab: function(tabName) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+            document.getElementById(`${tabName}-section`).classList.add('active');
+        },
+        closeModal: function(id) { document.getElementById(id).classList.remove('active'); },
+        logout: function() {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            setTimeout(() => { if(confirm('Bạn muốn đăng xuất khỏi hệ thống?')) window.location.href = 'index.html'; }, 300);
+        },
+        getISOWeekString: function(d) {
+            const date = new Date(d.getTime());
+            date.setHours(0, 0, 0, 0);
+            date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+            const week1 = new Date(date.getFullYear(), 0, 4);
+            const weekNum = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+            return `${date.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+        },
+        formatDateVN: function(dateStr) {
+            if(!dateStr) return '';
+            const p = dateStr.split('-');
+            return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : dateStr;
+        }
+    };
+
+    /* ==========================================================================
+       MỤC 1: TỔNG QUAN HỆ THỐNG
+       ========================================================================== */
+    const Module1_Overview = {
+        render: function() {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const activeBranchIds = [...new Set(DB.timetable.filter(s => s.attended && s.date.startsWith(currentMonth)).map(s => s.branchId))];
+
+            document.getElementById('m1-total-branches').innerText = DB.branches.length;
+            document.getElementById('m1-active-branches').innerText = activeBranchIds.length;
+            document.getElementById('m1-inactive-branches').innerText = DB.branches.length - activeBranchIds.length;
+            document.getElementById('m1-total-teachers').innerText = DB.teachers.length;
+            
+            const monthSlots = DB.timetable.filter(s => s.date.startsWith(currentMonth));
+            document.getElementById('m1-total-slots').innerText = monthSlots.length;
+
+            let totalSalary = 0;
+            DB.teachers.forEach(t => totalSalary += Module5_Report.calculateSalary(t, currentMonth).netSalary);
+            document.getElementById('m1-est-salary').innerText = totalSalary.toLocaleString('vi-VN') + ' VNĐ';
+        },
+        showDetail: function(type) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const activeBranchIds = [...new Set(DB.timetable.filter(s => s.attended && s.date.startsWith(currentMonth)).map(s => s.branchId))];
+            let title = '', tableHTML = '';
+
+            const renderInfoCol = (b) => `
+                <div class="info-cell">
+                    <div><i class="fa-solid fa-user" style="color:var(--primary-orange);"></i> <b>Đại diện:</b> ${b.rep || 'N/A'}</div>
+                    <div><i class="fa-solid fa-phone" style="color:var(--primary-green);"></i> <b>SĐT:</b> ${b.phone || 'N/A'}</div>
+                    <div><i class="fa-solid fa-id-card" style="color:#8B5CF6;"></i> <b>MST:</b> ${b.mst || 'N/A'}</div>
+                </div>
+            `;
+
+            if (type === 'totalBranch') {
+                title = 'Danh Sách Tất Cả Chi Nhánh';
+                tableHTML = `<div class="table-container"><table><thead><tr>
+                    <th>Mã CN</th><th>Tên Chi Nhánh</th><th>Khu Vực</th><th>Thông Tin</th><th>Học Phí Chi Nhánh</th><th>Trạng Thái</th>
+                </tr></thead><tbody>
+                ${DB.branches.map(b => `<tr>
+                    <td><b>${b.id}</b></td>
+                    <td><b>${b.name}</b></td>
+                    <td>${b.district} (${b.province})</td>
+                    <td>${renderInfoCol(b)}</td>
+                    <td><b>${Number(b.fee).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td><span class="status-badge ${b.status==='Đang hoạt động'?'status-active':'status-inactive'}">${b.status}</span></td>
+                </tr>`).join('')}
+                </tbody></table></div>`;
+            } 
+            else if (type === 'activeBranch' || type === 'inactiveBranch') {
+                let filtered = DB.branches.filter(b => type === 'activeBranch' ? activeBranchIds.includes(b.id) : !activeBranchIds.includes(b.id));
+                title = type === 'activeBranch' ? 'Danh Sách Chi Nhánh Đang Hoạt Động' : 'Danh Sách Chi Nhánh Chưa Hoạt Động';
+                tableHTML = `<div class="table-container"><table><thead><tr>
+                    <th>Mã CN</th><th>Tên Chi Nhánh</th><th>Khu Vực</th><th>Thông Tin</th><th>Học Phí Chi Nhánh</th>
+                </tr></thead><tbody>
+                ${filtered.map(b => `<tr>
+                    <td><b>${b.id}</b></td>
+                    <td><b>${b.name}</b></td>
+                    <td>${b.district} (${b.province})</td>
+                    <td>${renderInfoCol(b)}</td>
+                    <td><b>${Number(b.fee).toLocaleString('vi-VN')} VNĐ</b></td>
+                </tr>`).join('')}
+                </tbody></table></div>`;
+            } 
+            else if (type === 'totalTeachers') {
+                title = 'Danh Sách Toàn Bộ Giáo Viên';
+                tableHTML = `<div class="table-container"><table><thead><tr>
+                    <th>Mã GV</th><th>Tên Giáo Viên</th><th>SĐT / Email</th><th>Môn Dạy</th><th>Hình Thức</th><th>Lương Định Mức</th><th>Số Ca Được Giao (Tháng)</th>
+                </tr></thead><tbody>
+                ${DB.teachers.map(t => {
+                    const monthSlots = DB.timetable.filter(s => s.teacherId === t.id && s.date.startsWith(currentMonth)).length;
+                    return `<tr>
+                        <td><b>${t.id}</b></td>
+                        <td><b>${t.name}</b></td>
+                        <td>${t.phone}<br><small>${t.email}</small></td>
+                        <td>${t.subjectMain || t.subjects} ${t.subjectSub ? `(${t.subjectSub})` : ''}</td>
+                        <td><span class="status-badge ${t.type==='Full time'?'status-active':'status-inactive'}">${t.type}</span></td>
+                        <td>${Number(t.baseSalary).toLocaleString('vi-VN')} VNĐ</td>
+                        <td style="text-align:center;"><b>${monthSlots}</b> ca</td>
+                    </tr>`;
+                }).join('')}
+                </tbody></table></div>`;
+            } 
+            else if (type === 'totalSlots') {
+                title = 'Chi Tiết Tất Cả Ca Dạy Trong Tháng';
+                const slots = DB.timetable.filter(s => s.date.startsWith(currentMonth));
+                tableHTML = `<div class="table-container"><table><thead><tr>
+                    <th>STT</th><th>Ngày Dạy</th><th>Chi Nhánh</th><th>Giáo Viên</th><th>Môn Học</th><th>Lớp Học</th><th>Khung Giờ</th><th>Trạng Thái</th>
+                </tr></thead><tbody>
+                ${slots.length > 0 ? slots.map((s, idx) => {
+                    const t = DB.teachers.find(i => i.id === s.teacherId);
+                    const b = DB.branches.find(i => i.id === s.branchId);
+                    return `<tr>
+                        <td style="text-align:center;"><b>${idx + 1}</b></td>
+                        <td><b>${CoreSystem.formatDateVN(s.date)}</b></td>
+                        <td>${b ? b.name : 'N/A'}</td>
+                        <td><b>${t ? t.name : 'Chưa phân công'}</b></td>
+                        <td><span style="color:var(--primary-orange); font-weight:700;">${s.subject || 'N/A'}</span></td>
+                        <td>${s.classRoom || 'N/A'}</td>
+                        <td><b>${s.startTime} - ${s.endTime}</b></td>
+                        <td>${s.attended ? `<span class="status-badge status-active">Đã DD (${s.studentsCount} HS)</span>` : `<span class="status-badge status-inactive">Chưa DD</span>`}</td>
+                    </tr>`;
+                }).join('') : `<tr><td colspan="8" style="text-align:center;">Chưa có ca dạy nào trong tháng này</td></tr>`}
+                </tbody></table></div>`;
+            } 
+            else if (type === 'estSalary') {
+                title = 'Bảng Lương Dự Kiến';
+                tableHTML = `<div class="table-container"><table><thead><tr><th>Tên Giáo Viên</th><th>Loại HĐ</th><th>Lương Thực Nhận</th></tr></thead><tbody>
+                ${DB.teachers.map(t => `<tr><td><b>${t.name}</b></td><td>${t.type}</td><td><b>${Module5_Report.calculateSalary(t, currentMonth).netSalary.toLocaleString('vi-VN')} VNĐ</b></td></tr>`).join('')}
+                </tbody></table></div>`;
+            }
+
+            document.getElementById('m1-detailTitle').innerText = title;
+            document.getElementById('m1-detailBody').innerHTML = tableHTML;
+            document.getElementById('m1-modalDetail').classList.add('active');
+        }
+    };
+
+    /* ==========================================================================
+       MỤC 2: QUẢN LÝ CHI NHÁNH
+       ========================================================================== */
+    const Module2_Branch = {
+        locationData: {
+            'Đắk Lắk': ['TP. Buôn Ma Thuột', 'Thị xã Buôn Hồ', 'Huyện Ea Súp', 'Huyện Krông Pắc', 'Huyện Cư M\'gar', 'Huyện Krông Năng', 'Huyện Krông Búk', 'Huyện Lắk', 'Huyện Krông Bông', 'Huyện M\'Đrắk', 'Huyện Ea H\'leo', 'Huyện Cư Kuin', 'Huyện Buôn Đôn', 'Huyện Ea Kar'],
+            'Phú Yên': ['TP. Tuy Hòa', 'Thị xã Sông Cầu', 'Thị xã Đông Hòa', 'Huyện Phú Hòa', 'Huyện Tây Hòa', 'Huyện Tuy An', 'Huyện Đồng Xuân', 'Huyện Sơn Hòa', 'Huyện Sông Hinh']
+        },
+        tempDevices: [],
+        tempClasses: [],
+
+        render: function() {
+            const tbody = document.getElementById('m2-branch-table-body');
+            tbody.innerHTML = '';
+            if (DB.branches.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">Chưa có dữ liệu chi nhánh</td></tr>`;
+                return;
+            }
+
+            DB.branches.forEach((b, idx) => {
+                const deviceCount = (b.devices || []).length;
+                const classes = b.classList || [];
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td><b>${b.id}</b></td>
+                    <td><b>${b.name}</b></td>
+                    <td>
+                        <span class="status-badge status-active" style="background:#E0F2FE; color:#0369A1;">${classes.length} Lớp</span>
+                        <div style="font-size:11px; color:#6B7280; margin-top:4px;">${classes.join(', ') || 'Chưa thêm'}</div>
+                    </td>
+                    <td><b>ĐĐ:</b> ${b.rep}<br><b>SĐT:</b> ${b.phone}<br><b>Khu vực:</b> ${b.district}, ${b.province}</td>
+                    <td><span class="status-badge status-active">${deviceCount} Thiết bị</span></td>
+                    <td><b>${Number(b.fee).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td><span class="status-badge ${b.status==='Đang hoạt động'?'status-active':'status-inactive'}">${b.status}</span></td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="Module2_Branch.edit('${b.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-danger" style="padding:4px 8px;" onclick="Module2_Branch.delete('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+        },
+        onProvinceChange: function() {
+            const provSelect = document.getElementById('m2-branchProvince').value;
+            const distSelect = document.getElementById('m2-branchDistrict');
+            distSelect.innerHTML = '';
+            (this.locationData[provSelect] || []).forEach(dist => {
+                distSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
+            });
+        },
+        generateCode: function() {
+            if (DB.branches.length === 0) return 'CN001';
+            const maxId = DB.branches.reduce((max, item) => {
+                const num = parseInt(String(item.id).replace('CN', ''), 10) || 0;
+                return num > max ? num : max;
+            }, 0);
+            return 'CN' + String(maxId + 1).padStart(3, '0');
+        },
+        openAddModal: function() {
+            document.getElementById('m2-branchId').value = '';
+            document.getElementById('m2-branchCode').value = this.generateCode();
+            document.getElementById('m2-branchName').value = '';
+            document.getElementById('m2-branchRep').value = '';
+            document.getElementById('m2-branchPhone').value = '';
+            document.getElementById('m2-branchMst').value = '';
+            document.getElementById('m2-branchFee').value = '';
+            document.getElementById('m2-branchProvince').value = 'Đắk Lắk';
+            this.onProvinceChange();
+            document.getElementById('m2-branchAddressOld').value = '';
+            document.getElementById('m2-branchAddressNew').value = '';
+            document.getElementById('m2-branchStatus').value = 'Đang hoạt động';
+
+            this.tempClasses = [];
+            this.renderClassTable();
+
+            this.tempDevices = [];
+            this.renderDeviceTable();
+            document.getElementById('m2-modalTitle').innerText = 'Thêm Chi Nhánh Mới';
+            document.getElementById('m2-modalBranch').classList.add('active');
+        },
+
+        addClassToList: function() {
+            const name = document.getElementById('m2-classNameInput').value.trim();
+            if(!name) return alert('Vui lòng nhập tên lớp học!');
+            if(this.tempClasses.includes(name)) return alert('Lớp học này đã tồn tại!');
+            this.tempClasses.push(name);
+            document.getElementById('m2-classNameInput').value = '';
+            this.renderClassTable();
+        },
+        removeClassFromList: function(index) {
+            this.tempClasses.splice(index, 1);
+            this.renderClassTable();
+        },
+        renderClassTable: function() {
+            const tbody = document.getElementById('m2-class-list-body');
+            tbody.innerHTML = this.tempClasses.length === 0 ? `<tr><td colspan="3" style="text-align:center; color:#9CA3AF;">Chưa có lớp học nào được thêm</td></tr>` :
+            this.tempClasses.map((cls, idx) => `<tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td><b style="color:var(--primary-orange);">${cls}</b></td>
+                <td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module2_Branch.removeClassFromList(${idx})">Xóa</button></td>
+            </tr>`).join('');
+        },
+
+        addDeviceToList: function() {
+            const name = document.getElementById('m2-equipName').value.trim();
+            const qty = parseInt(document.getElementById('m2-equipQty').value) || 1;
+            const startDate = document.getElementById('m2-equipStartDate').value;
+            const endDate = document.getElementById('m2-equipEndDate').value;
+            if (!name) return alert('Vui lòng nhập tên thiết bị!');
+            this.tempDevices.push({ id: 'EQ_' + Date.now(), name, qty, startDate, endDate });
+            document.getElementById('m2-equipName').value = '';
+            this.renderDeviceTable();
+        },
+        removeDeviceFromList: function(index) {
+            this.tempDevices.splice(index, 1);
+            this.renderDeviceTable();
+        },
+        renderDeviceTable: function() {
+            const tbody = document.getElementById('m2-device-list-body');
+            tbody.innerHTML = this.tempDevices.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:#9CA3AF;">Chưa có thiết bị nào được chọn</td></tr>` :
+            this.tempDevices.map((dev, idx) => `<tr>
+                <td style="text-align:center;">${idx + 1}</td>
+                <td><b>${dev.name}</b></td>
+                <td style="text-align:center;">${dev.qty}</td>
+                <td>${CoreSystem.formatDateVN(dev.startDate) || 'N/A'}</td>
+                <td>${CoreSystem.formatDateVN(dev.endDate) || 'N/A'}</td>
+                <td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module2_Branch.removeDeviceFromList(${idx})">Xóa</button></td>
+            </tr>`).join('');
+        },
+        save: function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('m2-branchId').value;
+            const code = document.getElementById('m2-branchCode').value;
+            const branchObj = {
+                id: editId || code,
+                name: document.getElementById('m2-branchName').value,
+                rep: document.getElementById('m2-branchRep').value,
+                phone: document.getElementById('m2-branchPhone').value,
+                mst: document.getElementById('m2-branchMst').value,
+                fee: parseFloat(document.getElementById('m2-branchFee').value) || 0,
+                province: document.getElementById('m2-branchProvince').value,
+                district: document.getElementById('m2-branchDistrict').value,
+                addressOld: document.getElementById('m2-branchAddressOld').value,
+                addressNew: document.getElementById('m2-branchAddressNew').value,
+                classList: [...this.tempClasses],
+                classes: this.tempClasses.length,
+                status: document.getElementById('m2-branchStatus').value,
+                devices: [...this.tempDevices]
+            };
+            if (editId) {
+                const idx = DB.branches.findIndex(b => b.id === editId);
+                if (idx >= 0) DB.branches[idx] = branchObj;
+            } else {
+                DB.branches.push(branchObj);
+            }
+            DB.save();
+            CoreSystem.closeModal('m2-modalBranch');
+        },
+        edit: function(id) {
+            const b = DB.branches.find(i => i.id === id);
+            if (!b) return;
+            document.getElementById('m2-branchId').value = b.id;
+            document.getElementById('m2-branchCode').value = b.id;
+            document.getElementById('m2-branchName').value = b.name;
+            document.getElementById('m2-branchRep').value = b.rep;
+            document.getElementById('m2-branchPhone').value = b.phone;
+            document.getElementById('m2-branchMst').value = b.mst || '';
+            document.getElementById('m2-branchFee').value = b.fee || 0;
+            document.getElementById('m2-branchProvince').value = b.province || 'Đắk Lắk';
+            this.onProvinceChange();
+            document.getElementById('m2-branchDistrict').value = b.district || '';
+            document.getElementById('m2-branchAddressOld').value = b.addressOld || '';
+            document.getElementById('m2-branchAddressNew').value = b.addressNew || b.address || '';
+            document.getElementById('m2-branchStatus').value = b.status || 'Đang hoạt động';
+            
+            this.tempClasses = b.classList ? [...b.classList] : [];
+            this.renderClassTable();
+
+            this.tempDevices = b.devices ? JSON.parse(JSON.stringify(b.devices)) : [];
+            this.renderDeviceTable();
+            document.getElementById('m2-modalTitle').innerText = 'Chỉnh Sửa Chi Nhánh';
+            document.getElementById('m2-modalBranch').classList.add('active');
+        },
+        delete: function(id) {
+            if (confirm(`Bạn có chắc chắn muốn xóa chi nhánh mã ${id} không?`)) {
+                DB.branches = DB.branches.filter(b => b.id !== id);
+                DB.save();
+            }
+        }
+    };
+
+    /* ==========================================================================
+       MỤC 3: QUẢN LÝ GIÁO VIÊN
+       ========================================================================== */
+    const Module3_Teacher = {
+        locationData: {
+            'Đắk Lắk': ['TP. Buôn Ma Thuột', 'Thị xã Buôn Hồ', 'Huyện Ea Súp', 'Huyện Krông Pắc', 'Huyện Cư M\'gar', 'Huyện Krông Năng', 'Huyện Krông Búk', 'Huyện Lắk', 'Huyện Krông Bông', 'Huyện M\'Đrắk', 'Huyện Ea H\'leo', 'Huyện Cư Kuin', 'Huyện Buôn Đôn', 'Huyện Ea Kar'],
+            'Phú Yên': ['TP. Tuy Hòa', 'Thị xã Sông Cầu', 'Thị xã Đông Hòa', 'Huyện Phú Hòa', 'Huyện Tây Hòa', 'Huyện Tuy An', 'Huyện Đồng Xuân', 'Huyện Sơn Hòa', 'Huyện Sông Hinh']
+        },
+        tempDegrees: [],
+        tempTools: [],
+        render: function() {
+            const tbody = document.getElementById('m3-teacher-table-body');
+            tbody.innerHTML = '';
+            if (DB.teachers.length === 0) return tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">Chưa có dữ liệu giáo viên</td></tr>`;
+
+            DB.teachers.forEach((t, idx) => {
+                let branchNames = 'Chưa phân công';
+                if (t.branchIds && t.branchIds.length > 0) {
+                    branchNames = t.branchIds.map(bId => {
+                        const b = DB.branches.find(item => item.id === bId);
+                        return b ? b.name : bId;
+                    }).join(', ');
+                } else if (t.branchId) {
+                    const b = DB.branches.find(item => item.id === t.branchId);
+                    branchNames = b ? b.name : t.branchId;
+                }
+
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td><b>${t.id}</b></td>
+                    <td><b>${t.name}</b></td>
+                    <td class="info-cell">
+                        <div><b>SĐT:</b> ${t.phone}</div>
+                        <div><b>Email:</b> ${t.email}</div>
+                        <div><b>Ngày sinh:</b> ${CoreSystem.formatDateVN(t.dob) || 'N/A'}</div>
+                        <div><b>CCCD:</b> ${t.cccd || 'N/A'}</div>
+                        <div><b>STK:</b> ${t.stk || 'N/A'} (${t.bank || 'N/A'})</div>
+                    </td>
+                    <td><b>Chính:</b> ${t.subjectMain || t.subjects || 'N/A'}${t.subjectSub ? `<br><small style="color:#6B7280;">Phụ: ${t.subjectSub}</small>` : ''}</td>
+                    <td><b>CN:</b> ${branchNames}<br><span class="status-badge ${t.type==='Full time'?'status-active':'status-inactive'}">${t.type}</span></td>
+                    <td><span class="status-badge status-active">${(t.degrees||[]).length} Bằng cấp</span><br><span class="status-badge status-active" style="background:#E0F2FE; color:#0369A1;">${(t.tools||[]).length} Giáo cụ</span></td>
+                    <td><b>${Number(t.baseSalary || 0).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td><span class="status-badge ${t.status==='Đang làm việc'?'status-active':'status-inactive'}">${t.status || 'Đang làm việc'}</span></td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="Module3_Teacher.edit('${t.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-danger" style="padding:4px 8px;" onclick="Module3_Teacher.delete('${t.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+        },
+        onProvinceChange: function() {
+            const provSelect = document.getElementById('m3-teacherProvince').value;
+            const distSelect = document.getElementById('m3-teacherDistrict');
+            distSelect.innerHTML = '';
+            (this.locationData[provSelect] || []).forEach(dist => distSelect.innerHTML += `<option value="${dist}">${dist}</option>`);
+        },
+        generateCode: function() {
+            if (DB.teachers.length === 0) return 'GV001';
+            const maxId = DB.teachers.reduce((max, item) => {
+                const num = parseInt(String(item.id).replace('GV', ''), 10) || 0;
+                return num > max ? num : max;
+            }, 0);
+            return 'GV' + String(maxId + 1).padStart(3, '0');
+        },
+        renderBranchMultiselect: function(selectedBranchIds = []) {
+            const container = document.getElementById('m3-teacherBranchContainer');
+            container.innerHTML = '';
+            if (DB.branches.length === 0) {
+                container.innerHTML = '<div style="font-size:12px; color:#9CA3AF;">Chưa có chi nhánh nào trong hệ thống</div>';
+                return;
+            }
+
+            DB.branches.forEach(b => {
+                const isChecked = selectedBranchIds.includes(b.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <label class="multiselect-item">
+                        <input type="checkbox" class="m3-branch-cb" value="${b.id}" ${isChecked} onchange="Module3_Teacher.updateSelectAllState()">
+                        <span>${b.name} (${b.district})</span>
+                    </label>
+                `;
+            });
+            this.updateSelectAllState();
+        },
+        toggleSelectAllBranches: function(masterCb) {
+            document.querySelectorAll('.m3-branch-cb').forEach(cb => {
+                cb.checked = masterCb.checked;
+            });
+        },
+        updateSelectAllState: function() {
+            const allCbs = document.querySelectorAll('.m3-branch-cb');
+            if (allCbs.length === 0) return;
+            const checkedCbs = document.querySelectorAll('.m3-branch-cb:checked');
+            const selectAllCb = document.getElementById('m3-teacherBranchSelectAll');
+            if (selectAllCb) {
+                selectAllCb.checked = (allCbs.length === checkedCbs.length);
+            }
+        },
+        openAddModal: function() {
+            document.getElementById('m3-teacherId').value = '';
+            document.getElementById('m3-teacherCode').value = this.generateCode();
+            document.getElementById('m3-teacherName').value = '';
+            document.getElementById('m3-teacherProvince').value = 'Đắk Lắk';
+            this.onProvinceChange();
+            document.getElementById('m3-teacherAddressOld').value = '';
+            document.getElementById('m3-teacherAddressNew').value = '';
+            document.getElementById('m3-teacherPhone').value = '';
+            document.getElementById('m3-teacherDob').value = '';
+            document.getElementById('m3-teacherEmail').value = '';
+            document.getElementById('m3-teacherPassword').value = '123456';
+            document.getElementById('m3-teacherCccd').value = '';
+            document.getElementById('m3-teacherStk').value = '';
+            document.getElementById('m3-teacherBank').value = '';
+            document.getElementById('m3-teacherSubjectMain').value = '';
+            document.getElementById('m3-teacherSubjectSub').value = '';
+            
+            this.renderBranchMultiselect([]);
+
+            document.getElementById('m3-teacherType').value = 'Full time';
+            document.getElementById('m3-teacherBaseSalary').value = '';
+            document.getElementById('m3-teacherStatus').value = 'Đang làm việc';
+
+            this.tempDegrees = [];
+            this.renderDegreeTable();
+            this.tempTools = [];
+            this.renderToolTable();
+
+            document.getElementById('m3-modalTitle').innerText = 'Thêm Giáo Viên Mới';
+            document.getElementById('m3-modalTeacher').classList.add('active');
+        },
+        addDegreeToList: function() {
+            const name = document.getElementById('m3-degreeName').value.trim();
+            const issuer = document.getElementById('m3-degreeIssuer').value.trim();
+            const year = document.getElementById('m3-degreeYear').value.trim();
+            if (!name) return alert('Nhập tên bằng cấp!');
+            this.tempDegrees.push({ id: 'DEG_' + Date.now(), name, issuer: issuer || 'N/A', year: year || 'N/A' });
+            document.getElementById('m3-degreeName').value = '';
+            this.renderDegreeTable();
+        },
+        removeDegreeFromList: function(idx) { this.tempDegrees.splice(idx, 1); this.renderDegreeTable(); },
+        renderDegreeTable: function() {
+            const tbody = document.getElementById('m3-degree-list-body');
+            tbody.innerHTML = this.tempDegrees.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#9CA3AF;">Chưa có bằng cấp nào</td></tr>` :
+            this.tempDegrees.map((deg, idx) => `<tr><td style="text-align:center;">${idx+1}</td><td><b>${deg.name}</b></td><td>${deg.issuer}</td><td style="text-align:center;">${deg.year}</td><td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module3_Teacher.removeDegreeFromList(${idx})">Xóa</button></td></tr>`).join('');
+        },
+        addToolToList: function() {
+            const name = document.getElementById('m3-toolName').value.trim();
+            const qty = parseInt(document.getElementById('m3-toolQty').value) || 1;
+            const receiveDate = document.getElementById('m3-toolReceiveDate').value;
+            const returnDate = document.getElementById('m3-toolReturnDate').value;
+            const returnStatus = document.getElementById('m3-toolReturnStatus').value.trim();
+            if (!name) return alert('Nhập tên giáo cụ!');
+            this.tempTools.push({ id: 'TOOL_' + Date.now(), name, qty, receiveDate, returnDate, returnStatus: returnStatus || 'Bình thường' });
+            document.getElementById('m3-toolName').value = '';
+            this.renderToolTable();
+        },
+        removeToolFromList: function(idx) { this.tempTools.splice(idx, 1); this.renderToolTable(); },
+        renderToolTable: function() {
+            const tbody = document.getElementById('m3-tool-list-body');
+            tbody.innerHTML = this.tempTools.length === 0 ? `<tr><td colspan="7" style="text-align:center; color:#9CA3AF;">Chưa có giáo cụ nào</td></tr>` :
+            this.tempTools.map((tool, idx) => `<tr><td style="text-align:center;">${idx+1}</td><td><b>${tool.name}</b></td><td style="text-align:center;">${tool.qty}</td><td>${CoreSystem.formatDateVN(tool.receiveDate)||'N/A'}</td><td>${CoreSystem.formatDateVN(tool.returnDate)||'N/A'}</td><td>${tool.returnStatus}</td><td style="text-align:center;"><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module3_Teacher.removeToolFromList(${idx})">Xóa</button></td></tr>`).join('');
+        },
+        save: function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('m3-teacherId').value;
+            const code = document.getElementById('m3-teacherCode').value;
+            const mainSub = document.getElementById('m3-teacherSubjectMain').value;
+            const subSub = document.getElementById('m3-teacherSubjectSub').value;
+
+            const selectedBranchIds = Array.from(document.querySelectorAll('.m3-branch-cb:checked')).map(cb => cb.value);
+            if (selectedBranchIds.length === 0) {
+                return alert('Vui lòng chọn ít nhất 01 chi nhánh cho giáo viên!');
+            }
+
+            const teacherObj = {
+                id: editId || code,
+                name: document.getElementById('m3-teacherName').value,
+                province: document.getElementById('m3-teacherProvince').value,
+                district: document.getElementById('m3-teacherDistrict').value,
+                addressOld: document.getElementById('m3-teacherAddressOld').value,
+                addressNew: document.getElementById('m3-teacherAddressNew').value,
+                phone: document.getElementById('m3-teacherPhone').value,
+                dob: document.getElementById('m3-teacherDob').value,
+                email: document.getElementById('m3-teacherEmail').value,
+                pass: document.getElementById('m3-teacherPassword').value,
+                cccd: document.getElementById('m3-teacherCccd').value,
+                stk: document.getElementById('m3-teacherStk').value,
+                bank: document.getElementById('m3-teacherBank').value,
+                subjectMain: mainSub,
+                subjectSub: subSub,
+                subjects: mainSub + (subSub ? `, ${subSub}` : ''),
+                branchIds: selectedBranchIds,
+                branchId: selectedBranchIds[0] || '',
+                type: document.getElementById('m3-teacherType').value,
+                baseSalary: parseFloat(document.getElementById('m3-teacherBaseSalary').value) || 0,
+                status: document.getElementById('m3-teacherStatus').value,
+                degrees: [...this.tempDegrees],
+                tools: [...this.tempTools]
+            };
+            if (editId) {
+                const idx = DB.teachers.findIndex(t => t.id === editId);
+                if (idx >= 0) DB.teachers[idx] = teacherObj;
+            } else {
+                DB.teachers.push(teacherObj);
+            }
+            DB.save();
+            CoreSystem.closeModal('m3-modalTeacher');
+        },
+        edit: function(id) {
+            const t = DB.teachers.find(i => i.id === id);
+            if (!t) return;
+            document.getElementById('m3-teacherId').value = t.id;
+            document.getElementById('m3-teacherCode').value = t.id;
+            document.getElementById('m3-teacherName').value = t.name;
+            document.getElementById('m3-teacherProvince').value = t.province || 'Đắk Lắk';
+            this.onProvinceChange();
+            document.getElementById('m3-teacherDistrict').value = t.district || '';
+            document.getElementById('m3-teacherAddressOld').value = t.addressOld || '';
+            document.getElementById('m3-teacherAddressNew').value = t.addressNew || t.address || '';
+            document.getElementById('m3-teacherPhone').value = t.phone || '';
+            document.getElementById('m3-teacherDob').value = t.dob || '';
+            document.getElementById('m3-teacherEmail').value = t.email || '';
+            document.getElementById('m3-teacherPassword').value = t.pass || '123456';
+            document.getElementById('m3-teacherCccd').value = t.cccd || '';
+            document.getElementById('m3-teacherStk').value = t.stk || '';
+            document.getElementById('m3-teacherBank').value = t.bank || '';
+            document.getElementById('m3-teacherSubjectMain').value = t.subjectMain || t.subjects || '';
+            document.getElementById('m3-teacherSubjectSub').value = t.subjectSub || '';
+
+            let selectedBranches = t.branchIds || (t.branchId ? [t.branchId] : []);
+            this.renderBranchMultiselect(selectedBranches);
+
+            document.getElementById('m3-teacherType').value = t.type || 'Full time';
+            document.getElementById('m3-teacherBaseSalary').value = t.baseSalary || 0;
+            document.getElementById('m3-teacherStatus').value = t.status || 'Đang làm việc';
+
+            this.tempDegrees = t.degrees ? JSON.parse(JSON.stringify(t.degrees)) : [];
+            this.renderDegreeTable();
+            this.tempTools = t.tools ? JSON.parse(JSON.stringify(t.tools)) : [];
+            this.renderToolTable();
+
+            document.getElementById('m3-modalTitle').innerText = 'Chỉnh Sửa Thông Tin Giáo Viên';
+            document.getElementById('m3-modalTeacher').classList.add('active');
+        },
+        delete: function(id) {
+            if (confirm(`Bạn có chắc chắn muốn xóa giáo viên mã ${id} không?`)) {
+                DB.teachers = DB.teachers.filter(t => t.id !== id);
+                DB.save();
+            }
+        }
+    };
+
+    /* ==========================================================================
+       MỤC 4: THỜI KHÓA BIỂU
+       ========================================================================== */
+    const Module4_Timetable = {
+        currentAttendanceSlotId: null,
+
+        render: function() {
+            this.populateFilterDropdowns();
+            this.generateTimeSuggestions();
+
+            const grid = document.getElementById('m4-timetableGrid');
+            grid.innerHTML = '';
+
+            const weekVal = document.getElementById('m4-weekSelector').value || CoreSystem.getISOWeekString(new Date());
+            const firstDayOfWeek = this.getMondayFromISOWeek(weekVal);
+
+            const filterBranch = document.getElementById('m4-filterBranch').value;
+            const filterTeacher = document.getElementById('m4-filterTeacher').value;
+
+            const dayNames = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+
+            for (let i = 0; i < 7; i++) {
+                const currDate = new Date(firstDayOfWeek);
+                currDate.setDate(firstDayOfWeek.getDate() + i);
+                const dateStr = currDate.toISOString().split('T')[0];
+
+                let daySlots = DB.timetable.filter(s => s.date === dateStr);
+
+                if (filterBranch) daySlots = daySlots.filter(s => s.branchId === filterBranch);
+                if (filterTeacher) daySlots = daySlots.filter(s => s.teacherId === filterTeacher);
+
+                const morningSlots = daySlots.filter(s => parseInt(s.startTime.split(':')[0]) < 12);
+                const afternoonSlots = daySlots.filter(s => parseInt(s.startTime.split(':')[0]) >= 12);
+
+                const renderSlotsGroup = (slots) => {
+                    if (slots.length === 0) return '<div style="font-size:11px; color:#9CA3AF; text-align:center; padding:10px 0;">-- Trống --</div>';
+                    return slots.map(s => {
+                        const t = DB.teachers.find(item => item.id === s.teacherId);
+                        const b = DB.branches.find(item => item.id === s.branchId);
+                        return `
+                            <div class="slot-card ${s.attended ? 'attended' : ''}">
+                                <div style="font-weight:800; color:var(--primary-orange); display:flex; justify-content:space-between;">
+                                    <span><i class="fa-regular fa-clock"></i> ${s.startTime} - ${s.endTime}</span>
+                                    <span style="background:var(--primary-orange); color:white; padding:1px 5px; border-radius:4px; font-size:10px;">${s.subjectType || 'Chính'}</span>
+                                </div>
+                                <div style="font-weight:700; margin-top:2px;">${s.subject} - <span style="color:#0369A1;">${s.classRoom}</span></div>
+                                <div style="color:#4B5563; font-size:11px;"><i class="fa-solid fa-code-branch"></i> ${b ? b.name : 'N/A'}</div>
+                                <div style="color:var(--primary-green); font-size:11px; font-weight:600;"><i class="fa-solid fa-user-tie"></i> GV: ${t ? t.name : 'N/A'}</div>
+                                
+                                ${s.attended ? `
+                                    <div class="attendance-badge-highlight">
+                                        <i class="fa-solid fa-circle-check"></i> Đã DD (${s.studentsCount} HS)
+                                    </div>
+                                ` : ''}
+
+                                <div style="margin-top:8px; display:flex; gap:3px; flex-wrap:wrap;">
+                                    <button class="btn btn-green" style="padding:3px 6px; font-size:10px;" onclick="Module4_Timetable.openAttendanceModal('${s.id}')"><i class="fa-solid fa-user-check"></i> Điểm danh hộ</button>
+                                    <button class="btn btn-secondary" style="padding:3px 6px; font-size:10px;" onclick="Module4_Timetable.edit('${s.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
+                                    <button class="btn btn-danger" style="padding:3px 6px; font-size:10px;" onclick="Module4_Timetable.delete('${s.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                };
+
+                grid.innerHTML += `
+                    <div class="day-column">
+                        <div class="day-header">
+                            <div>${dayNames[i]}</div>
+                            <div style="font-size:11px; opacity:0.9;">${currDate.getDate()}/${currDate.getMonth() + 1}/${currDate.getFullYear()}</div>
+                        </div>
+                        <div class="session-block">
+                            <div class="session-title"><i class="fa-solid fa-sun"></i> Buổi Sáng</div>
+                            ${renderSlotsGroup(morningSlots)}
+                        </div>
+                        <div class="session-block">
+                            <div class="session-title" style="color: #0369A1; background: #E0F2FE;"><i class="fa-solid fa-cloud-sun"></i> Buổi Chiều</div>
+                            ${renderSlotsGroup(afternoonSlots)}
+                        </div>
+                    </div>
+                `;
+            }
+        },
+
+        getMondayFromISOWeek: function(weekStr) {
+            const [year, week] = weekStr.split('-W').map(Number);
+            const simple = new Date(year, 0, 1 + (week - 1) * 7);
+            const dow = simple.getDay();
+            const ISOweekStart = simple;
+            if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+            else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+            return ISOweekStart;
+        },
+
+        setToCurrentWeek: function() {
+            document.getElementById('m4-weekSelector').value = CoreSystem.getISOWeekString(new Date());
+            this.render();
+        },
+
+        changeWeek: function(offset) {
+            const input = document.getElementById('m4-weekSelector');
+            const currMonday = this.getMondayFromISOWeek(input.value);
+            currMonday.setDate(currMonday.getDate() + offset * 7);
+            input.value = CoreSystem.getISOWeekString(currMonday);
+            this.render();
+        },
+
+        copyPreviousWeekSchedule: function() {
+            const currentWeekVal = document.getElementById('m4-weekSelector').value || CoreSystem.getISOWeekString(new Date());
+            const currentMonday = this.getMondayFromISOWeek(currentWeekVal);
+
+            const prevMonday = new Date(currentMonday);
+            prevMonday.setDate(currentMonday.getDate() - 7);
+            const prevSunday = new Date(prevMonday);
+            prevSunday.setDate(prevMonday.getDate() + 6);
+
+            const prevMondayStr = prevMonday.toISOString().split('T')[0];
+            const prevSundayStr = prevSunday.toISOString().split('T')[0];
+
+            const prevWeekSlots = DB.timetable.filter(s => s.date >= prevMondayStr && s.date <= prevSundayStr);
+
+            if (prevWeekSlots.length === 0) {
+                return alert('Không tìm thấy lịch dạy nào trong tuần trước để sao chép!');
+            }
+
+            if (confirm(`Bạn có chắc muốn sao chép ${prevWeekSlots.length} ca dạy từ tuần trước sang tuần này (${currentWeekVal}) không?`)) {
+                let copiedCount = 0;
+                prevWeekSlots.forEach(slot => {
+                    const oldDate = new Date(slot.date);
+                    const newDate = new Date(oldDate);
+                    newDate.setDate(oldDate.getDate() + 7);
+                    const newDateStr = newDate.toISOString().split('T')[0];
+
+                    DB.timetable.push({
+                        id: 'SL' + (Date.now() + Math.floor(Math.random() * 10000)),
+                        date: newDateStr,
+                        branchId: slot.branchId,
+                        classRoom: slot.classRoom,
+                        startTime: slot.startTime,
+                        endTime: slot.endTime,
+                        teacherId: slot.teacherId,
+                        subjectType: slot.subjectType,
+                        subject: slot.subject,
+                        attended: false,
+                        studentsCount: 0
+                    });
+                    copiedCount++;
+                });
+
+                DB.save();
+                alert(`Đã sao chép thành công ${copiedCount} ca dạy sang tuần này!`);
+            }
+        },
+
+        clearCurrentWeekSchedule: function() {
+            const weekVal = document.getElementById('m4-weekSelector').value || CoreSystem.getISOWeekString(new Date());
+            const monday = this.getMondayFromISOWeek(weekVal);
+            
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+
+            const mondayStr = monday.toISOString().split('T')[0];
+            const sundayStr = sunday.toISOString().split('T')[0];
+
+            if(confirm(`Bạn có chắc chắn muốn XÓA TOÀN BỘ ca dạy từ ngày ${CoreSystem.formatDateVN(mondayStr)} đến ${CoreSystem.formatDateVN(sundayStr)} không?`)) {
+                DB.timetable = DB.timetable.filter(s => s.date < mondayStr || s.date > sundayStr);
+                DB.save();
+                alert('Đã xóa sạch lịch dạy trong tuần được chọn!');
+            }
+        },
+
+        populateFilterDropdowns: function() {
+            const bSel = document.getElementById('m4-filterBranch');
+            const currentBVal = bSel.value;
+            bSel.innerHTML = '<option value="">-- Tất cả Chi Nhánh --</option>';
+            DB.branches.forEach(b => bSel.innerHTML += `<option value="${b.id}">${b.name}</option>`);
+            bSel.value = currentBVal;
+
+            const tSel = document.getElementById('m4-filterTeacher');
+            const currentTVal = tSel.value;
+            tSel.innerHTML = '<option value="">-- Tất cả Giáo Viên --</option>';
+            DB.teachers.forEach(t => tSel.innerHTML += `<option value="${t.id}">${t.name}</option>`);
+            tSel.value = currentTVal;
+        },
+
+        generateTimeSuggestions: function() {
+            const datalist = document.getElementById('time-suggestions');
+            if(datalist.children.length > 0) return;
+            datalist.innerHTML = '';
+            for (let h = 6; h <= 21; h++) {
+                const hh = String(h).padStart(2, '0');
+                datalist.innerHTML += `<option value="${hh}:00">`;
+                datalist.innerHTML += `<option value="${hh}:30">`;
+            }
+        },
+
+        toggleDateType: function() {
+            const type = document.querySelector('input[name="m4-dateType"]:checked').value;
+            if (type === 'date') {
+                document.getElementById('m4-groupSpecificDate').style.display = 'flex';
+                document.getElementById('m4-groupWeekdays').style.display = 'none';
+                document.getElementById('m4-slotDate').required = true;
+            } else {
+                document.getElementById('m4-groupSpecificDate').style.display = 'none';
+                document.getElementById('m4-groupWeekdays').style.display = 'flex';
+                document.getElementById('m4-slotDate').required = false;
+            }
+        },
+
+        onBranchChange: function() {
+            const branchId = document.getElementById('m4-slotBranch').value;
+            const branch = DB.branches.find(b => b.id === branchId);
+
+           // Cập nhật danh sách lớp học thuộc Chi nhánh
+        const classSelect = document.getElementById('m4-slotClass');
+        classSelect.innerHTML = '<option value="">-- Chọn Lớp Học --</option>';
+        if (branch && branch.classList && branch.classList.length > 0) {
+            branch.classList.forEach(c => {
+                classSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        // Cập nhật danh sách Giáo viên thuộc Chi nhánh
+        const teacherSelect = document.getElementById('m4-slotTeacher');
+        teacherSelect.innerHTML = '<option value="">-- Chọn Giáo Viên --</option>';
+        
+        const filteredTeachers = DB.teachers.filter(t => {
+            if (t.branchIds && t.branchIds.length > 0) return t.branchIds.includes(branchId);
+            return t.branchId === branchId;
+        });
+
+        filteredTeachers.forEach(t => {
+            teacherSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.subjectMain || t.subjects || 'N/A'})</option>`;
+        });
+
+        this.onTeacherChange();
+    },
+
+    onTeacherChange: function() {
+        const teacherId = document.getElementById('m4-slotTeacher').value;
+        const teacher = DB.teachers.find(t => t.id === teacherId);
+        const subjectType = document.getElementById('m4-slotSubjectType').value;
+        const subjectInput = document.getElementById('m4-slotSubject');
+
+        if (teacher) {
+            if (subjectType === 'Chính') {
+                subjectInput.value = teacher.subjectMain || teacher.subjects || '';
+            } else {
+                subjectInput.value = teacher.subjectSub || '';
+            }
+        } else {
+            subjectInput.value = '';
+        }
+    },
+
+    onSubjectTypeChange: function() {
+        this.onTeacherChange();
+    },
+
+    autoSuggestEndTime: function() {
+        const startTime = document.getElementById('m4-slotStartTime').value;
+        if (!startTime) return;
+        const parts = startTime.split(':');
+        let h = parseInt(parts[0], 10);
+        let m = parseInt(parts[1], 10) + 45; // Mặc định thời lượng tiết học 45 phút
+        if (m >= 60) {
+            h += Math.floor(m / 60);
+            m = m % 60;
+        }
+        const endStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        document.getElementById('m4-slotEndTime').value = endStr;
+    },
+
+    openAddModal: function() {
+        document.getElementById('m4-slotId').value = '';
+        document.querySelector('input[name="m4-dateType"][value="date"]').checked = true;
+        this.toggleDateType();
+
+        document.getElementById('m4-slotDate').value = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.m4-cb-day').forEach(cb => cb.checked = false);
+
+        const branchSelect = document.getElementById('m4-slotBranch');
+        branchSelect.innerHTML = '<option value="">-- Chọn Chi Nhánh --</option>';
+        DB.branches.forEach(b => branchSelect.innerHTML += `<option value="${b.id}">${b.name}</option>`);
+
+        document.getElementById('m4-slotClass').innerHTML = '<option value="">-- Chọn Lớp Học --</option>';
+        document.getElementById('m4-slotTeacher').innerHTML = '<option value="">-- Chọn Giáo Viên --</option>';
+        document.getElementById('m4-slotStartTime').value = '08:00';
+        this.autoSuggestEndTime();
+        document.getElementById('m4-slotSubjectType').value = 'Chính';
+        document.getElementById('m4-slotSubject').value = '';
+
+        document.getElementById('m4-modalTitle').innerText = 'Thêm Ca Dạy Mới';
+        document.getElementById('m4-modalSlot').classList.add('active');
+    },
+
+    save: function(e) {
+        e.preventDefault();
+        const editId = document.getElementById('m4-slotId').value;
+        const dateType = document.querySelector('input[name="m4-dateType"]:checked').value;
+        const branchId = document.getElementById('m4-slotBranch').value;
+        const classRoom = document.getElementById('m4-slotClass').value;
+        const startTime = document.getElementById('m4-slotStartTime').value;
+        const endTime = document.getElementById('m4-slotEndTime').value;
+        const teacherId = document.getElementById('m4-slotTeacher').value;
+        const subjectType = document.getElementById('m4-slotSubjectType').value;
+        const subject = document.getElementById('m4-slotSubject').value;
+
+        if (editId) {
+            const idx = DB.timetable.findIndex(s => s.id === editId);
+            if (idx >= 0) {
+                DB.timetable[idx].date = document.getElementById('m4-slotDate').value;
+                DB.timetable[idx].branchId = branchId;
+                DB.timetable[idx].classRoom = classRoom;
+                DB.timetable[idx].startTime = startTime;
+                DB.timetable[idx].endTime = endTime;
+                DB.timetable[idx].teacherId = teacherId;
+                DB.timetable[idx].subjectType = subjectType;
+                DB.timetable[idx].subject = subject;
+            }
+        } else {
+            if (dateType === 'date') {
+                const slotDate = document.getElementById('m4-slotDate').value;
+                if (!slotDate) return alert('Vui lòng chọn ngày dạy!');
+                DB.timetable.push({
+                    id: 'SL' + Date.now(),
+                    date: slotDate,
+                    branchId,
+                    classRoom,
+                    startTime,
+                    endTime,
+                    teacherId,
+                    subjectType,
+                    subject,
+                    attended: false,
+                    studentsCount: 0
+                });
+            } else {
+                const checkedDays = Array.from(document.querySelectorAll('.m4-cb-day:checked')).map(cb => parseInt(cb.value));
+                if (checkedDays.length === 0) return alert('Vui lòng chọn ít nhất 01 thứ trong tuần!');
+
+                const weekVal = document.getElementById('m4-weekSelector').value || CoreSystem.getISOWeekString(new Date());
+                const monday = this.getMondayFromISOWeek(weekVal);
+
+                checkedDays.forEach(dayOffset => {
+                    const targetDate = new Date(monday);
+                    // Thay đổi offset theo thiết lập (0: CN, 1: T2, ..., 6: T7)
+                    const actualOffset = dayOffset === 0 ? 6 : dayOffset - 1;
+                    targetDate.setDate(monday.getDate() + actualOffset);
+
+                    DB.timetable.push({
+                        id: 'SL' + (Date.now() + Math.floor(Math.random() * 1000)),
+                        date: targetDate.toISOString().split('T')[0],
+                        branchId,
+                        classRoom,
+                        startTime,
+                        endTime,
+                        teacherId,
+                        subjectType,
+                        subject,
+                        attended: false,
+                        studentsCount: 0
+                    });
+                });
+            }
+        }
+
+        DB.save();
+        CoreSystem.closeModal('m4-modalSlot');
+    },
+
+    edit: function(id) {
+        const s = DB.timetable.find(i => i.id === id);
+        if (!s) return;
+
+        this.openAddModal();
+        document.getElementById('m4-slotId').value = s.id;
+        document.getElementById('m4-slotDate').value = s.date;
+        document.getElementById('m4-slotBranch').value = s.branchId;
+        this.onBranchChange();
+
+        document.getElementById('m4-slotClass').value = s.classRoom;
+        document.getElementById('m4-slotStartTime').value = s.startTime;
+        document.getElementById('m4-slotEndTime').value = s.endTime;
+        document.getElementById('m4-slotTeacher').value = s.teacherId;
+        document.getElementById('m4-slotSubjectType').value = s.subjectType || 'Chính';
+        document.getElementById('m4-slotSubject').value = s.subject;
+
+        document.getElementById('m4-modalTitle').innerText = 'Chỉnh Sửa Ca Dạy';
+    },
+
+    delete: function(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa ca dạy này?')) {
+            DB.timetable = DB.timetable.filter(s => s.id !== id);
+            DB.save();
+        }
+    },
+
+    openAttendanceModal: function(slotId) {
+        this.currentAttendanceSlotId = slotId;
+        const slot = DB.timetable.find(s => s.id === slotId);
+        if (slot) {
+            document.getElementById('m4-attendanceStudents').value = slot.studentsCount || 15;
+        }
+        document.getElementById('m4-modalAttendance').classList.add('active');
+    },
+
+    confirmAttendance: function() {
+        const count = parseInt(document.getElementById('m4-attendanceStudents').value, 10);
+        if (isNaN(count) || count < 0) return alert('Số học sinh không hợp lệ!');
+
+        const slot = DB.timetable.find(s => s.id === this.currentAttendanceSlotId);
+        if (slot) {
+            slot.attended = true;
+            slot.studentsCount = count;
+            DB.save();
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+        }
+        CoreSystem.closeModal('m4-modalAttendance');
+    }
+};
+
+/* ==========================================================================
+   MỤC 5: BÁO CÁO & THỐNG KÊ
+   ========================================================================== */
+const Module5_Report = {
+    currentSubTab: 'branch',
+
+    switchSubTab: function(tab) {
+        this.currentSubTab = tab;
+        document.getElementById('m5-btn-tab-branch').classList.toggle('active', tab === 'branch');
+        document.getElementById('m5-btn-tab-salary').classList.toggle('active', tab === 'salary');
+        document.getElementById('m5-report-branch-view').style.display = tab === 'branch' ? 'block' : 'none';
+        document.getElementById('m5-report-salary-view').style.display = tab === 'salary' ? 'block' : 'none';
+        this.render();
+    },
+
+    render: function() {
+        const monthVal = document.getElementById('m5-reportMonth').value || new Date().toISOString().slice(0, 7);
+        
+        if (this.currentSubTab === 'branch') {
+            this.renderBranchReport(monthVal);
+        } else {
+            this.renderSalaryReport(monthVal);
+        }
+    },
+
+    renderBranchReport: function(monthVal) {
+        const tbody = document.getElementById('m5-report-branch-body');
+        tbody.innerHTML = '';
+
+        if (DB.branches.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Chưa có chi nhánh nào</td></tr>';
+            return;
+        }
+
+        DB.branches.forEach((b, idx) => {
+            const branchSlots = DB.timetable.filter(s => s.branchId === b.id && s.date.startsWith(monthVal));
+            const attendedSlots = branchSlots.filter(s => s.attended);
+            
+            // Tính số học sinh thực tế theo nhập tay hoặc tổng từ điểm danh
+            const manualCount = DB.manualStudents[`${b.id}_${monthVal}`];
+            const totalStudents = manualCount !== undefined ? parseInt(manualCount, 10) : attendedSlots.reduce((sum, s) => sum + (s.studentsCount || 0), 0);
+            
+            const feePerStudent = b.fee || 0;
+            const totalRevenue = totalStudents * feePerStudent;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="text-align:center;"><b>${idx + 1}</b></td>
+                    <td><b>${b.name}</b><br><small style="color:#6B7280;">Mã: ${b.id}</small></td>
+                    <td class="info-cell">
+                        <div><b>ĐĐ:</b> ${b.rep}</div>
+                        <div><b>SĐT:</b> ${b.phone}</div>
+                        <div><b>Khu vực:</b> ${b.district}</div>
+                    </td>
+                    <td style="text-align:center;"><b>${(b.classList || []).length}</b> lớp</td>
+                    <td style="text-align:center;">
+                        <input type="number" class="form-control" style="width:80px; text-align:center; display:inline-block;" value="${totalStudents}" onchange="Module5_Report.updateManualStudents('${b.id}', '${monthVal}', this.value)">
+                    </td>
+                    <td><b>${feePerStudent.toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td style="color:var(--primary-orange); font-weight:800;">${totalRevenue.toLocaleString('vi-VN')} VNĐ</td>
+                    <td style="text-align:center;"><b>${attendedSlots.length}</b> / ${branchSlots.length} tiết</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn-primary" style="padding:4px 8px; font-size:12px;" onclick="Module5_Report.showBranchDetail('${b.id}', '${monthVal}')"><i class="fa-solid fa-eye"></i> Xem Chi Tiết</button>
+                    </td>
+                </tr>
+            `;
+        });
+    },
+
+    updateManualStudents: function(branchId, monthVal, val) {
+        const key = `${branchId}_${monthVal}`;
+        const num = parseInt(val, 10);
+        if (!isNaN(num) && num >= 0) {
+            DB.manualStudents[key] = num;
+            DB.save();
+        }
+    },
+
+    showBranchDetail: function(branchId, monthVal) {
+        const branch = DB.branches.find(b => b.id === branchId);
+        const slots = DB.timetable.filter(s => s.branchId === branchId && s.date.startsWith(monthVal));
+
+        document.getElementById('m5-branchDetailTitle').innerText = `Chi Tiết Ca Dạy - ${branch ? branch.name : branchId} (${monthVal})`;
+        const tbody = document.getElementById('m5-branchDetailBody');
+        tbody.innerHTML = '';
+
+        if (slots.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có ca dạy nào trong tháng này</td></tr>';
+        } else {
+            slots.forEach((s, idx) => {
+                const teacher = DB.teachers.find(t => t.id === s.teacherId);
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${idx + 1}</td>
+                        <td><b>${CoreSystem.formatDateVN(s.date)}</b> (${s.startTime} - ${s.endTime})</td>
+                        <td><b style="color:var(--primary-orange);">${s.classRoom}</b></td>
+                        <td>${teacher ? teacher.name : 'N/A'}</td>
+                        <td style="text-align:center;">${s.attended ? '<span class="status-badge status-active">Đã DD</span>' : '<span class="status-badge status-inactive">Chưa DD</span>'}</td>
+                        <td style="text-align:center;"><b>${s.studentsCount || 0}</b> HS</td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('m5-modalBranchDetail').classList.add('active');
+    },
+
+ calculateSalary: function(teacher, monthVal) {
+            const teacherSlots = DB.timetable.filter(s => s.teacherId === teacher.id && s.date.startsWith(monthVal));
+            const attendedSlots = teacherSlots.filter(s => s.attended);
+
+            const baseSalary = parseFloat(teacher.baseSalary) || 0;
+            const assignedCount = teacherSlots.length;
+            const attendedCount = attendedSlots.length;
+
+            let teachingSalary = 0;
+
+            if (teacher.type === 'Full time') {
+                // Lương dạy Full-time = (Lương định mức / Số ca đã giao) * Số ca đã điểm danh
+                if (assignedCount > 0) {
+                    teachingSalary = (baseSalary / assignedCount) * attendedCount;
+                } else {
+                    // Nếu chưa giao ca nào trong tháng thì giữ nguyên lương định mức gốc
+                    teachingSalary = baseSalary;
+                }
+            } else {
+                // Lương dạy Part-time = Lương định mức * Số ca đã điểm danh
+                teachingSalary = baseSalary * attendedCount;
+            }
+
+            const adjKey = `${teacher.id}_${monthVal}`;
+            const adj = DB.salaryAdjustments[adjKey] || { bonus: 0, bonusNote: '', deduct: 0, deductNote: '' };
+
+            const bonus = parseFloat(adj.bonus) || 0;
+            const deduct = parseFloat(adj.deduct) || 0;
+            const netSalary = teachingSalary + bonus - deduct;
+
+            return {
+                assignedCount: assignedCount,
+                attendedCount: attendedCount,
+                teachingSalary: Math.round(teachingSalary), // Làm tròn số tiền lương
+                bonus: bonus,
+                bonusNote: adj.bonusNote || '',
+                deduct: deduct,
+                deductNote: adj.deductNote || '',
+                netSalary: Math.round(netSalary)
+            };
+        },
+
+    renderSalaryReport: function(monthVal) {
+        const tbody = document.getElementById('m5-report-salary-body');
+        tbody.innerHTML = '';
+
+        if (DB.teachers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Chưa có giáo viên nào</td></tr>';
+            return;
+        }
+
+        DB.teachers.forEach((t, idx) => {
+            const sal = this.calculateSalary(t, monthVal);
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="text-align:center;"><b>${idx + 1}</b></td>
+                    <td><b>${t.id}</b></td>
+                    <td><b>${t.name}</b></td>
+                    <td class="info-cell">
+                        <div><b>STK:</b> ${t.stk || 'N/A'}</div>
+                        <div><b>NH:</b> ${t.bank || 'N/A'}</div>
+                    </td>
+                    <td><span class="status-badge ${t.type==='Full time'?'status-active':'status-inactive'}">${t.type}</span></td>
+                    <td><b>${Number(t.baseSalary || 0).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td style="text-align:center;"><b>${sal.assignedCount}</b> ca</td>
+                    <td style="text-align:center; color:var(--primary-green);"><b>${sal.attendedCount}</b> ca</td>
+                    <td><b>${sal.teachingSalary.toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td>
+                        <input type="number" class="form-control" style="width:90px;" value="${sal.bonus}" placeholder="Phụ cấp" onchange="Module5_Report.updateAdjustment('${t.id}', '${monthVal}', 'bonus', this.value)">
+                        <input type="text" class="form-control" style="width:90px; margin-top:2px; font-size:11px;" value="${sal.bonusNote}" placeholder="Ghi chú PC" onchange="Module5_Report.updateAdjustmentNote('${t.id}', '${monthVal}', 'bonusNote', this.value)">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" style="width:90px;" value="${sal.deduct}" placeholder="Khấu trừ" onchange="Module5_Report.updateAdjustment('${t.id}', '${monthVal}', 'deduct', this.value)">
+                        <input type="text" class="form-control" style="width:90px; margin-top:2px; font-size:11px;" value="${sal.deductNote}" placeholder="Ghi chú KT" onchange="Module5_Report.updateAdjustmentNote('${t.id}', '${monthVal}', 'deductNote', this.value)">
+                    </td>
+                    <td style="color:#8B5CF6; font-weight:800;">${sal.netSalary.toLocaleString('vi-VN')} VNĐ</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn-primary" style="padding:4px 8px; font-size:12px;" onclick="Module5_Report.showTeacherDetail('${t.id}', '${monthVal}')"><i class="fa-solid fa-eye"></i> Xem Lịch</button>
+                    </td>
+                </tr>
+            `;
+        });
+    },
+
+    updateAdjustment: function(teacherId, monthVal, field, val) {
+        const key = `${teacherId}_${monthVal}`;
+        if (!DB.salaryAdjustments[key]) DB.salaryAdjustments[key] = { bonus: 0, bonusNote: '', deduct: 0, deductNote: '' };
+        const num = parseFloat(val);
+        DB.salaryAdjustments[key][field] = !isNaN(num) && num >= 0 ? num : 0;
+        DB.save();
+    },
+
+    updateAdjustmentNote: function(teacherId, monthVal, field, val) {
+        const key = `${teacherId}_${monthVal}`;
+        if (!DB.salaryAdjustments[key]) DB.salaryAdjustments[key] = { bonus: 0, bonusNote: '', deduct: 0, deductNote: '' };
+        DB.salaryAdjustments[key][field] = val.trim();
+        DB.save();
+    },
+
+    showTeacherDetail: function(teacherId, monthVal) {
+        const teacher = DB.teachers.find(t => t.id === teacherId);
+        const slots = DB.timetable.filter(s => s.teacherId === teacherId && s.date.startsWith(monthVal));
+
+        document.getElementById('m5-teacherDetailTitle').innerText = `Lịch Dạy Chi Tiết - ${teacher ? teacher.name : teacherId} (${monthVal})`;
+        const tbody = document.getElementById('m5-teacherDetailBody');
+        tbody.innerHTML = '';
+
+        if (slots.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có ca dạy nào trong tháng này</td></tr>';
+        } else {
+            slots.forEach((s, idx) => {
+                const branch = DB.branches.find(b => b.id === s.branchId);
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align:center;">${idx + 1}</td>
+                        <td><b>${CoreSystem.formatDateVN(s.date)}</b> (${s.startTime} - ${s.endTime})</td>
+                        <td>${branch ? branch.name : 'N/A'}</td>
+                        <td><b style="color:var(--primary-orange);">${s.classRoom}</b> (${s.subject})</td>
+                        <td style="text-align:center;">${s.attended ? '<span class="status-badge status-active">Đã Điểm Danh</span>' : '<span class="status-badge status-inactive">Chưa Điểm Danh</span>'}</td>
+                        <td style="text-align:center;"><b>${s.studentsCount || 0}</b> HS</td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.getElementById('m5-modalTeacherDetail').classList.add('active');
+    },
+
+    exportSalaryExcel: function() {
+        const monthVal = document.getElementById('m5-reportMonth').value || new Date().toISOString().slice(0, 7);
+        const data = DB.teachers.map((t, idx) => {
+            const sal = this.calculateSalary(t, monthVal);
+            return {
+                'STT': idx + 1,
+                'Mã GV': t.id,
+                'Tên Giáo Viên': t.name,
+                'Số Điện Thoại': t.phone,
+                'Số Tài Khoản': t.stk,
+                'Ngân Hàng': t.bank,
+                'Hình Thức': t.type,
+                'Lương Định Mức (VNĐ)': t.baseSalary,
+                'Số Ca Được Giao': sal.assignedCount,
+                'Số Ca Đã Điểm Danh': sal.attendedCount,
+                'Lương Ca Dạy (VNĐ)': sal.teachingSalary,
+                'Phụ Cấp (VNĐ)': sal.bonus,
+                'Ghi Chú Phụ Cấp': sal.bonusNote,
+                'Khấu Trừ (VNĐ)': sal.deduct,
+                'Ghi Chú Khấu Trừ': sal.deductNote,
+                'Lương Thực Nhận (VNĐ)': sal.netSalary
+            };
+        });
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "BaoCaoLuong");
+        XLSX.writeFile(wb, `BaoCaoLuong_${monthVal}.xlsx`);
+    },
+
+ exportAllExcel: function() {
+        const monthVal = document.getElementById('m5-reportMonth').value || new Date().toISOString().slice(0, 7);
+        const wb = XLSX.utils.book_new();
+
+        // Sheet 1: Báo Cáo Chi Nhánh
+        const branchData = DB.branches.map((b, idx) => {
+            const branchSlots = DB.timetable.filter(s => s.branchId === b.id && s.date.startsWith(monthVal));
+            const attendedSlots = branchSlots.filter(s => s.attended);
+            const manualCount = DB.manualStudents[`${b.id}_${monthVal}`];
+            const totalStudents = manualCount !== undefined ? parseInt(manualCount, 10) : attendedSlots.reduce((sum, s) => sum + (s.studentsCount || 0), 0);
+            
+            return {
+                'STT': idx + 1,
+                'Mã Chi Nhánh': b.id,
+                'Tên Chi Nhánh': b.name,
+                'Tổng Ca Phân Công': branchSlots.length,
+                'Tổng Ca Đã Học': attendedSlots.length,
+                'Tổng Lượt Học Sinh': totalStudents
+            };
+        });
+
+        // Sheet 2: Báo Cáo Lương Giáo Viên
+        const teacherData = DB.teachers.map((t, idx) => {
+            const sal = this.calculateSalary(t, monthVal);
+            return {
+                'STT': idx + 1,
+                'Mã GV': t.id,
+                'Tên Giáo Viên': t.name,
+                'Số Điện Thoại': t.phone,
+                'Số Tài Khoản': t.stk,
+                'Ngân Hàng': t.bank,
+                'Hình Thức': t.type,
+                'Lương Định Mức (VNĐ)': t.baseSalary,
+                'Số Ca Được Giao': sal.assignedCount,
+                'Số Ca Đã Điểm Danh': sal.attendedCount,
+                'Lương Ca Dạy (VNĐ)': sal.teachingSalary,
+                'Phụ Cấp (VNĐ)': sal.bonus,
+                'Ghi Chú Phụ Cấp': sal.bonusNote,
+                'Khấu Trừ (VNĐ)': sal.deduct,
+                'Ghi Chú Khấu Trừ': sal.deductNote,
+                'Lương Thực Nhận (VNĐ)': sal.netSalary
+            };
+        });
+
+        const wsBranch = XLSX.utils.json_to_sheet(branchData);
+        const wsTeacher = XLSX.utils.json_to_sheet(teacherData);
+
+        XLSX.utils.book_append_sheet(wb, wsBranch, "BaoCaoChiNhanh");
+        XLSX.utils.book_append_sheet(wb, wsTeacher, "BaoCaoLuong");
+        XLSX.writeFile(wb, `TongHopBaoCao_${monthVal}.xlsx`);
+    }
+}; // Đóng Module/Object M5
+
+
+/* ==========================================================================
+   MỤC 6: ĐỔI MẬT KHẨU
+   ========================================================================== */
+const Module6_UserPass = {
+    openModal: function() {
+        const select = document.getElementById('m6-passAccountSelect');
+        select.innerHTML = '';
+        
+        // Lấy toàn bộ tài khoản email trong hệ thống
+        const accounts = [
+            ...DB.accounts,
+            ...DB.teachers.map(t => ({ email: t.email, pass: t.pass || '123456', role: 'teacher', id: t.id }))
+        ];
+
+        accounts.forEach(acc => {
+            select.innerHTML += `<option value="${acc.email}">${acc.email} (${acc.role === 'admin' ? 'Quản trị' : 'Giáo viên'})</option>`;
+        });
+
+        this.autoFillOldPass();
+        document.getElementById('m6-passNew').value = '';
+        document.getElementById('m6-passConfirm').value = '';
+        document.getElementById('m6-modalChangePass').classList.add('active');
+    },
+
+    autoFillOldPass: function() {
+        const email = document.getElementById('m6-passAccountSelect').value;
+        const accSystem = DB.accounts.find(a => a.email === email);
+        if (accSystem) {
+            document.getElementById('m6-passOld').value = accSystem.pass;
+            return;
+        }
+        const teacher = DB.teachers.find(t => t.email === email);
+        if (teacher) {
+            document.getElementById('m6-passOld').value = teacher.pass || '123456';
+        }
+    },
+
+    save: function(e) {
+        e.preventDefault();
+        const email = document.getElementById('m6-passAccountSelect').value;
+        const passNew = document.getElementById('m6-passNew').value;
+        const passConfirm = document.getElementById('m6-passConfirm').value;
+
+        if (passNew !== passConfirm) {
+            return alert('Xác nhận mật khẩu mới không trùng khớp!');
+        }
+
+        const accSystem = DB.accounts.find(a => a.email === email);
+        if (accSystem) {
+            accSystem.pass = passNew;
+        }
+
+        const teacher = DB.teachers.find(t => t.email === email);
+        if (teacher) {
+            teacher.pass = passNew;
+        }
+
+        DB.save();
+        alert(`Đã đổi mật khẩu thành công cho tài khoản ${email}!`);
+        CoreSystem.closeModal('m6-modalChangePass');
+    }
+};
+
+// Khởi chạy hệ thống khi trang tải xong
+window.addEventListener('DOMContentLoaded', () => {
+    CoreSystem.init();
+});
+</script>
+
+</body>
+</html>
