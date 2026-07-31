@@ -14,23 +14,32 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-    <!-- Firebase Config -->
+   <!-- Firebase Config -->
     <script>
       const firebaseConfig = {
-        apiKey: "AiZaSyAi4_8Lsy6J3CTEU9LxFDEnppMuVEZSVF0",
-        authDomain: "crmthandong-ee4db.firebaseapp.com",
-        databaseURL: "https://crmthandong-ee4db-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "crmthandong-ee4db",
-        storageBucket: "crmthandong-ee4db.firebasestorage.app",
-        messagingSenderId: "639923839375",
-        appId: "1:639923839375:web:1439554eca26cbaedd6bfa",
-        measurementId: "G-TX4K73RGPP"
+        apiKey: "AIzaSyDhmbwtlR-ETCJMaAwEl2jf8spdQo3ONL0",
+        authDomain: "crmschoolingtd.firebaseapp.com",
+        databaseURL: "https://crmschoolingtd-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "crmschoolingtd",
+        storageBucket: "crmschoolingtd.firebasestorage.app",
+        messagingSenderId: "447595255615",
+        appId: "1:447595255615:web:4114b698ccd571d6dc658a"
       };
 
       firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
     </script>
     <style>
+       @media print {
+    body, html { background: #fff !important; height: auto !important; overflow: visible !important; }
+    body * { visibility: hidden; }
+    .modal-overlay.active, .modal-overlay.active * { visibility: visible; }
+    .modal-overlay.active { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: auto !important; background: none !important; backdrop-filter: none !important; display: block !important; z-index: 99999; }
+    .modal-box { max-width: 100% !important; width: 100% !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+    .modal-header, button { display: none !important; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+}
         :root {
             --primary-orange: #FF6B00;
             --primary-green: #10B981;
@@ -256,12 +265,21 @@
         <div id="report-section" class="section-view">
             <div class="header-title">
                 <span>5. Báo Cáo & Thống Kê</span>
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <label style="font-size: 14px; font-weight: 700;">Chọn Tháng:</label>
                     <input type="month" id="m5-reportMonth" class="form-control" onchange="Module5_Report.render()">
+                    
+                    <!-- Nút Khóa / Mở chốt tháng báo cáo -->
+                    <button id="m5-btnLockMonth" class="btn btn-secondary" onclick="Module5_Report.toggleLockMonth()"><i class="fa-solid fa-lock-open"></i> Mở Khóa Tháng</button>
+                    
                     <button class="btn btn-green" onclick="Module5_Report.exportAllExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Tất Cả Excel</button>
                 </div>
             </div>
+            
+            <div id="m5-lockNotice" style="padding: 10px 15px; background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 10px; margin-bottom: 15px; font-weight: 700; color: #92400E; display: none;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Tháng này ĐÃ CHỐT BÁO CÁO. Dữ liệu và bảng lương trong tháng này đã bị khóa, không thể chỉnh sửa!
+            </div>
+
             <div class="tab-buttons">
                 <button class="tab-btn active" id="m5-btn-tab-branch" onclick="Module5_Report.switchSubTab('branch')">Báo Cáo Chi Nhánh</button>
                 <button class="tab-btn" id="m5-btn-tab-salary" onclick="Module5_Report.switchSubTab('salary')">Báo Cáo Tiền Lương</button>
@@ -269,9 +287,27 @@
             
             <!-- BÁO CÁO CHI NHÁNH -->
             <div id="m5-report-branch-view" class="table-container">
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Báo cáo tổng hợp số liệu hoạt động các chi nhánh.</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-primary" onclick="Module5_Report.previewBranchExcel()"><i class="fa-solid fa-file-pdf"></i> Xem Trước & Tải PDF Chi Nhánh</button>
+                        <button class="btn btn-green" onclick="Module5_Report.previewBranchExcel()"><i class="fa-solid fa-file-excel"></i> Xem Trước Excel Chi Nhánh</button>
+                    </div>
+                </div>
                 <table>
                     <thead>
-                        <tr><th>STT</th><th>Tên Chi Nhánh</th><th>Thông Tin</th><th>Số Lớp</th><th>Số Học Sinh</th><th>Học Phí</th><th>Doanh Thu</th><th>Số Tiết Dạy</th><th>Thao Tác</th></tr>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên Chi Nhánh</th>
+                            <th>Thông Tin</th>
+                            <th>Số Lớp</th>
+                            <th>HS Giáo Viên Điểm Danh (Max lớp)</th>
+                            <th>HS Chi Nhánh Khai Báo (Nhập tay)</th>
+                            <th>Học Phí</th>
+                            <th>Doanh Thu (Tính theo khai báo)</th>
+                            <th>Số Tiết Dạy</th>
+                            <th>Thao Tác</th>
+                        </tr>
                     </thead>
                     <tbody id="m5-report-branch-body"></tbody>
                 </table>
@@ -279,9 +315,12 @@
 
             <!-- BÁO CÁO TIỀN LƯƠNG -->
             <div id="m5-report-salary-view" class="table-container" style="display: none;">
-                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Quản lý báo cáo bảng lương giáo viên tự động theo ca dạy.</span>
-                    <button class="btn btn-green" onclick="Module5_Report.exportSalaryExcel()"><i class="fa-solid fa-file-excel"></i> Tải Excel Báo Cáo Lương</button>
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap: 10px;">
+                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Quản lý bảng lương giáo viên. Ô Phụ Cấp và Khấu Trừ có thể nhập tay trực tiếp.</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-primary" onclick="Module5_Report.previewAllTeacherSalaryPDF()"><i class="fa-solid fa-file-pdf"></i> Xem Trước PDF Tất Cả Giáo Viên</button>
+                        <button class="btn btn-green" onclick="Module5_Report.exportSalaryExcel()"><i class="fa-solid fa-file-excel"></i> Tải Excel Bảng Lương</button>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -295,20 +334,47 @@
                             <th>Ca Đã Giao</th>
                             <th>Ca Đã DD</th>
                             <th>Lương Dạy</th>
-                            <th>Phụ Cấp</th>
-                            <th>Khấu Trừ</th>
+                            <th>Phụ Cấp (Nhập tay)</th>
+                            <th>Khấu Trừ (Nhập tay)</th>
                             <th>Lương Thực Nhận</th>
-                            <th>Thao Tác</th>
+                            <th>Thao Tác PDF & Gửi Thông Báo</th>
                         </tr>
                     </thead>
                     <tbody id="m5-report-salary-body"></tbody>
                 </table>
             </div>
         </div>
-
-    </div>
-</div>
-
+            <!-- BÁO CÁO TIỀN LƯƠNG -->
+            <div id="m5-report-salary-view" class="table-container" style="display: none;">
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap: 10px;">
+                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Quản lý bảng lương giáo viên. Ô Phụ Cấp và Khấu Trừ có thể nhập tay trực tiếp.</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-primary" onclick="Module5_Report.previewBranchExcel()"><i class="fa-solid fa-file-pdf"></i> Xem Trước PDF Chi Nhánh</button>
+                        <button class="btn btn-green" onclick="Module5_Report.exportSalaryExcel()"><i class="fa-solid fa-file-excel"></i> Tải Excel Bảng Lương</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã GV</th>
+                            <th>Tên Giáo Viên</th>
+                            <th>Thông Tin</th>
+                            <th>Hình Thức</th>
+                            <th>Lương Định Mức</th>
+                            <th>Ca Đã Giao</th>
+                            <th>Ca Đã DD</th>
+                            <th>Lương Dạy</th>
+                            <th>Phụ Cấp (Nhập tay)</th>
+                            <th>Khấu Trừ (Nhập tay)</th>
+                            <th>Lương Thực Nhận</th>
+                            <th>Thao Tác PDF & Gửi Thông Báo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m5-report-salary-body"></tbody>
+                </table>
+            </div>
+        </div>
 <!-- ================= MODAL CỦA CÁC MỤC CON ================= -->
 
 <!-- MODAL CỦA MỤC 1 (HIỂN THỊ CHI TIẾT TỔNG QUAN) -->
@@ -746,42 +812,41 @@
 
         // Khởi tạo lắng nghe dữ liệu thời gian thực từ Firebase Realtime Database
         initFirebaseListeners: function() {
-            const parseData = (data) => data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+    const parseData = (data) => data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
 
-            // Lắng nghe dữ liệu Chi Nhánh
-            database.ref('branches').on('value', (snapshot) => {
-                const data = snapshot.val();
-                this.branches = parseData(data);
-                CoreSystem.refreshAllModules();
-            });
+    // Lắng nghe dữ liệu Chi Nhánh
+    database.ref('branches').on('value', (snapshot) => {
+        const data = snapshot.val();
+        this.branches = parseData(data);
+        CoreSystem.refreshAllModules();
+    }, (error) => {
+        console.error("Lỗi đọc branches:", error);
+    });
 
-            // Lắng nghe dữ liệu Giáo Viên
-            database.ref('teachers').on('value', (snapshot) => {
-                const data = snapshot.val();
-                this.teachers = parseData(data);
-                CoreSystem.refreshAllModules();
-            });
+    // Lắng nghe dữ liệu Giáo Viên
+    database.ref('teachers').on('value', (snapshot) => {
+        const data = snapshot.val();
+        this.teachers = parseData(data);
+        CoreSystem.refreshAllModules();
+    });
 
-            // Lắng nghe dữ liệu Thời Khóa Biểu
-            database.ref('timetable').on('value', (snapshot) => {
-                const data = snapshot.val();
-                this.timetable = parseData(data);
-                CoreSystem.refreshAllModules();
-            });
+    // Lắng nghe dữ liệu Thời Khóa Biểu
+    database.ref('timetable').on('value', (snapshot) => {
+        const data = snapshot.val();
+        this.timetable = parseData(data);
+        CoreSystem.refreshAllModules();
+    });
 
-            // Lắng nghe dữ liệu Số Học Sinh Nhập Tay
-            database.ref('manualStudents').on('value', (snapshot) => {
-                this.manualStudents = snapshot.val() || {};
-                CoreSystem.refreshAllModules();
-            });
+    database.ref('manualStudents').on('value', (snapshot) => {
+        this.manualStudents = snapshot.val() || {};
+        CoreSystem.refreshAllModules();
+    });
 
-            // Lắng nghe dữ liệu Phụ Cấp / Khấu Trừ Lương
-            database.ref('salaryAdjustments').on('value', (snapshot) => {
-                this.salaryAdjustments = snapshot.val() || {};
-                CoreSystem.refreshAllModules();
-            });
-        },
-
+    database.ref('salaryAdjustments').on('value', (snapshot) => {
+        this.salaryAdjustments = snapshot.val() || {};
+        CoreSystem.refreshAllModules();
+    });
+},
         // Đồng bộ dữ liệu lên Firebase
         save: function() {
             database.ref('branches').set(this.branches);
@@ -817,9 +882,14 @@
         },
         closeModal: function(id) { document.getElementById(id).classList.remove('active'); },
         logout: function() {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            setTimeout(() => { if(confirm('Bạn muốn đăng xuất khỏi hệ thống?')) window.location.reload(); }, 300);
-        },
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    setTimeout(() => { 
+        if(confirm('Bạn muốn đăng xuất khỏi hệ thống?')) {
+            // Chuyển hướng về trang đăng nhập index.html
+            window.location.href = 'index.html'; 
+        }
+    }, 300);
+},
         getISOWeekString: function(d) {
             const date = new Date(d.getTime());
             date.setHours(0, 0, 0, 0);
@@ -1676,12 +1746,68 @@
        MỤC 5: BÁO CÁO HỆ THỐNG
        ========================================================================== */
     const Module5_Report = {
+        lockedMonths: {},
         currentSubTab: 'branch',
+
+        isMonthLocked: function(monthStr) {
+            return DB.lockedMonths && DB.lockedMonths[monthStr] === true;
+        },
+
+        toggleLockMonth: function() {
+            const monthStr = document.getElementById('m5-reportMonth').value;
+            if(!monthStr) return;
+            
+            const isLocked = this.isMonthLocked(monthStr);
+            if(isLocked) {
+                if(confirm(`Bạn có chắc muốn MỞ KHÓA báo cáo tháng ${monthStr}? Dữ liệu sẽ có thể được chỉnh sửa lại.`)) {
+                    DB.lockedMonths[monthStr] = false;
+                    DB.save();
+                    this.render();
+                }
+            } else {
+                if(confirm(`Bạn có chắc muốn CHỐT BÁO CÁO tháng ${monthStr}? Sau khi chốt, dữ liệu trong tháng này sẽ bị khóa và không ảnh hưởng đến các tháng khác.`)) {
+                    DB.lockedMonths[monthStr] = true;
+                    DB.save();
+                    this.render();
+                }
+            }
+        },
+
+        updateAdjustment: function(teacherId, monthStr, field, value) {
+            if(this.isMonthLocked(monthStr)) {
+                alert('Tháng này đã bị khóa chốt báo cáo, không thể thay đổi thông tin!');
+                this.render();
+                return;
+            }
+            const adjKey = `${teacherId}_${monthStr}`;
+            if(!DB.salaryAdjustments) DB.salaryAdjustments = {};
+            if(!DB.salaryAdjustments[adjKey]) DB.salaryAdjustments[adjKey] = { bonus: 0, deduct: 0 };
+            
+            DB.salaryAdjustments[adjKey][field] = parseFloat(value) || 0;
+            DB.save();
+            this.render();
+        },
+
+        updateManualStudents: function(branchId, monthStr, value) {
+            if(this.isMonthLocked(monthStr)) {
+                alert('Tháng này đã bị khóa chốt báo cáo, không thể thay đổi thông tin!');
+                this.render();
+                return;
+            }
+            if(!DB.manualStudents) DB.manualStudents = {};
+            if(!DB.manualStudents[branchId]) DB.manualStudents[branchId] = {};
+            
+            DB.manualStudents[branchId][monthStr] = parseFloat(value) || 0;
+            DB.save();
+            this.render();
+        },
+
         render: function() {
             const currentMonth = document.getElementById('m5-reportMonth').value;
             if (this.currentSubTab === 'branch') this.renderBranchReport(currentMonth);
             else this.renderSalaryReport(currentMonth);
         },
+
         switchSubTab: function(tab) {
             this.currentSubTab = tab;
             document.getElementById('m5-btn-tab-branch').classList.toggle('active', tab === 'branch');
@@ -1690,27 +1816,58 @@
             document.getElementById('m5-report-salary-view').style.display = tab === 'salary' ? 'block' : 'none';
             this.render();
         },
+
         renderBranchReport: function(monthStr) {
+            const isLocked = this.isMonthLocked(monthStr);
+            const noticeEl = document.getElementById('m5-lockNotice');
+            const btnLock = document.getElementById('m5-btnLockMonth');
+
+            if(isLocked) {
+                noticeEl.style.display = 'block';
+                btnLock.className = 'btn btn-danger';
+                btnLock.innerHTML = '<i class="fa-solid fa-lock"></i> Đã Khóa (Mở khóa)';
+            } else {
+                noticeEl.style.display = 'none';
+                btnLock.className = 'btn btn-secondary';
+                btnLock.innerHTML = '<i class="fa-solid fa-lock-open"></i> Khóa Tháng Này';
+            }
+
             const tbody = document.getElementById('m5-report-branch-body');
             tbody.innerHTML = '';
+            const disabledAttr = isLocked ? 'readonly style="background:#F3F4F6;"' : '';
 
             DB.branches.forEach((b, idx) => {
                 const monthSlots = DB.timetable.filter(s => s.branchId === b.id && s.date.startsWith(monthStr));
                 const attendedSlots = monthSlots.filter(s => s.attended);
-                let totalStudents = attendedSlots.reduce((sum, s) => sum + (s.studentsCount || 0), 0);
                 
-                if (DB.manualStudents[b.id] && DB.manualStudents[b.id][monthStr] !== undefined) {
-                    totalStudents = DB.manualStudents[b.id][monthStr];
+                const classMaxStudents = {};
+                attendedSlots.forEach(s => {
+                    const clsName = s.classRoom || 'Chưa phân lớp';
+                    const currentCount = s.studentsCount || 0;
+                    if (!classMaxStudents[clsName] || currentCount > classMaxStudents[clsName]) {
+                        classMaxStudents[clsName] = currentCount;
+                    }
+                });
+                const teacherMaxStudents = Object.values(classMaxStudents).reduce((sum, val) => sum + val, 0);
+
+                let declaredStudents = teacherMaxStudents;
+                if (DB.manualStudents && DB.manualStudents[b.id] && DB.manualStudents[b.id][monthStr] !== undefined) {
+                    declaredStudents = DB.manualStudents[b.id][monthStr];
                 }
 
-                const totalRevenue = totalStudents * (b.fee || 0);
+                const totalRevenue = declaredStudents * (b.fee || 0);
 
                 tbody.innerHTML += `<tr>
                     <td>${idx + 1}</td>
                     <td><b>${b.name}</b></td>
                     <td><b>Khu vực:</b> ${b.district}<br><b>ĐĐ:</b> ${b.rep}</td>
                     <td style="text-align:center;">${(b.classList||[]).length} Lớp</td>
-                    <td style="text-align:center;"><b>${totalStudents}</b> HS</td>
+                    <td style="text-align:center;"><b style="color:#2563EB;">${teacherMaxStudents}</b> HS</td>
+                    <td>
+                        <input type="number" class="form-control" value="${declaredStudents}" ${disabledAttr} 
+                            onchange="Module5_Report.updateManualStudents('${b.id}', '${monthStr}', this.value)" 
+                            style="width: 120px; text-align: center; font-weight: bold; color: var(--primary-orange);">
+                    </td>
                     <td>${Number(b.fee||0).toLocaleString('vi-VN')} VNĐ</td>
                     <td><b style="color:var(--primary-green);">${totalRevenue.toLocaleString('vi-VN')} VNĐ</b></td>
                     <td style="text-align:center;"><b>${attendedSlots.length}</b> tiết</td>
@@ -1718,12 +1875,16 @@
                 </tr>`;
             });
         },
+
         renderSalaryReport: function(monthStr) {
+            const isLocked = this.isMonthLocked(monthStr);
             const tbody = document.getElementById('m5-report-salary-body');
             tbody.innerHTML = '';
 
             DB.teachers.forEach((t, idx) => {
                 const calc = this.calculateSalary(t, monthStr);
+                const disabledAttr = isLocked ? 'readonly style="background:#F3F4F6;"' : '';
+
                 tbody.innerHTML += `<tr>
                     <td>${idx + 1}</td>
                     <td><b>${t.id}</b></td>
@@ -1734,13 +1895,17 @@
                     <td style="text-align:center;">${calc.totalAssigned}</td>
                     <td style="text-align:center;"><b>${calc.totalAttended}</b></td>
                     <td>${calc.teachingSalary.toLocaleString('vi-VN')} VNĐ</td>
-                    <td>${calc.bonus.toLocaleString('vi-VN')} VNĐ</td>
-                    <td>${calc.deduct.toLocaleString('vi-VN')} VNĐ</td>
+                    <td><input type="number" class="form-control" value="${calc.bonus}" ${disabledAttr} onchange="Module5_Report.updateAdjustment('${t.id}', '${monthStr}', 'bonus', this.value)" style="width:120px;"></td>
+                    <td><input type="number" class="form-control" value="${calc.deduct}" ${disabledAttr} onchange="Module5_Report.updateAdjustment('${t.id}', '${monthStr}', 'deduct', this.value)" style="width:120px;"></td>
                     <td><b style="color:var(--primary-orange);">${calc.netSalary.toLocaleString('vi-VN')} VNĐ</b></td>
-                    <td><button class="btn btn-primary" style="padding:4px 8px; font-size:12px;" onclick="Module5_Report.showTeacherDetail('${t.id}', '${monthStr}')">Chi Tiết</button></td>
+                    <td>
+                        <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="Module5_Report.previewTeacherSalaryPDF('${t.id}', '${monthStr}')"><i class="fa-solid fa-file-pdf"></i> Xem PDF</button>
+                        <button class="btn btn-green" style="padding:4px 8px; font-size:11px; margin-top:2px;" onclick="Module5_Report.sendSalaryNotification('${t.id}', '${monthStr}')"><i class="fa-solid fa-paper-plane"></i> Gửi TB</button>
+                    </td>
                 </tr>`;
             });
         },
+
         calculateSalary: function(teacher, monthStr) {
             const monthSlots = DB.timetable.filter(s => s.teacherId === teacher.id && s.date.startsWith(monthStr));
             const attendedSlots = monthSlots.filter(s => s.attended);
@@ -1761,6 +1926,234 @@
                 netSalary: teachingSalary + bonus - deduct
             };
         },
+
+        previewTeacherSalaryPDF: function(tId, monthStr) {
+            const t = DB.teachers.find(i => i.id === tId);
+            const calc = this.calculateSalary(t, monthStr);
+            const slots = DB.timetable.filter(s => s.teacherId === tId && s.date.startsWith(monthStr));
+
+            const html = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-weight: 800; font-size: 15px; text-transform: uppercase; color: #FF6B00;">CÔNG TY TNHH TNL M'DRĂK</div>
+                    <div style="font-weight: bold; font-size: 13px; text-transform: uppercase; color: #374151;">HỆ THỐNG QUẢN TRỊ SCHOOLING</div>
+                    <div style="font-weight: bold; font-size: 16px; text-transform: uppercase; margin-top: 8px; color: #111827;">PHIẾU XÁC NHẬN LƯƠNG GIÁO VIÊN THÁNG ${monthStr}</div>
+                </div>
+
+                <div style="background: #FFF5EE; border: 1px solid #FFD8C2; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 13px; line-height: 1.6;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><b>Họ và tên GV:</b> ${t.name} (Mã: ${t.id})</div>
+                        <div><b>Điện thoại:</b> ${t.phone}</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><b>Hình thức hợp đồng:</b> ${t.type}</div>
+                        <div><b>Lương định mức:</b> ${Number(t.baseSalary||0).toLocaleString('vi-VN')} VNĐ</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><b>Ngân hàng nhận lương:</b> ${t.stk} - ${t.bank}</div>
+                        <div><b>Tổng ca đã điểm danh:</b> ${calc.totalAttended} / ${calc.totalAssigned} ca</div>
+                    </div>
+                </div>
+
+                <div style="font-weight: bold; margin-bottom: 8px; color: #FF6B00;">CHI TIẾT CÁC CA DẠY TRONG THÁNG:</div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #FFF5EE; text-align: center;">
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">STT</th>
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Ngày dạy</th>
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Ca dạy</th>
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Chi nhánh</th>
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Tên lớp</th>
+                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Điểm danh & Sĩ số</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${slots.length === 0 ? `<tr><td colspan="6" style="text-align:center; border:1px solid #000; padding:8px;">Không có ca dạy nào trong tháng</td></tr>` : 
+                        slots.map((s, idx) => {
+                            const b = DB.branches.find(i => i.id === s.branchId);
+                            return `<tr>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${CoreSystem.formatDateVN(s.date)}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${s.startTime} - ${s.endTime}</td>
+                                <td style="border: 1px solid #000; padding: 6px;">${b ? b.name : s.branchId}</td>
+                                <td style="border: 1px solid #000; padding: 6px; font-weight:bold;">${s.classRoom}</td>
+                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${s.attended ? `Đã DD (${s.studentsCount} HS)` : 'Chưa DD'}</td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+
+                <div style="background: #F3F4F6; padding: 15px; border-radius: 10px; margin-bottom: 30px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Lương dạy học:</span> <b>${calc.teachingSalary.toLocaleString('vi-VN')} VNĐ</b></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Phụ cấp thêm:</span> <b style="color:var(--primary-green);">+ ${calc.bonus.toLocaleString('vi-VN')} VNĐ</b></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Khấu trừ:</span> <b style="color:#EF4444;">- ${calc.deduct.toLocaleString('vi-VN')} VNĐ</b></div>
+                    <hr style="border: 0; border-top: 1px solid #D1D5DB; margin: 8px 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: #FF6B00;"><span>THỰC NHẬN:</span> <span>${calc.netSalary.toLocaleString('vi-VN')} VNĐ</span></div>
+                </div>
+
+                <!-- Bản trình kí -->
+                <div style="display: flex; justify-content: space-between; text-align: center; page-break-inside: avoid;">
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic;">Người lập biểu</div>
+                        <div style="font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold;">___________________</div>
+                    </div>
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic;">Kế toán trưởng</div>
+                        <div style="font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold;">___________________</div>
+                    </div>
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic;">Giáo viên xác nhận</div>
+                        <div style="font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold;">___________________</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('m5-teacherSalaryPDFContent').innerHTML = html;
+            document.getElementById('m5-btnSendTeacherNotify').setAttribute('onclick', `Module5_Report.sendSalaryNotification('${t.id}', '${monthStr}')`);
+            document.getElementById('m5-modalTeacherSalaryPDF').classList.add('active');
+        },
+
+        previewAllTeacherSalaryPDF: function() {
+            const monthStr = document.getElementById('m5-reportMonth').value;
+            let totalNet = 0;
+
+            const html = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-weight: 800; font-size: 15px; text-transform: uppercase; color: #FF6B00;">CÔNG TY TNHH TNL M'DRĂK</div>
+                    <div style="font-weight: bold; font-size: 12px; text-transform: uppercase; color: #374151; margin-top: 2px;">HỆ THỐNG QUẢN TRỊ SCHOOLING</div>
+                    <div style="font-weight: bold; font-size: 15px; text-transform: uppercase; margin-top: 6px; color: #111827;">BẢNG LƯƠNG TỔNG HỢP TOÀN BỘ GIÁO VIÊN - THÁNG ${monthStr}</div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed;">
+                    <thead>
+                        <tr style="background-color: #FFF5EE; text-align: center;">
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 35px;">STT</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 55px;">Mã GV</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 110px;">Họ và tên</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 60px;">Hình thức</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 75px;">Lương ĐM</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 40px;">Ca giao</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 40px;">Ca DD</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 75px;">Lương dạy</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 65px;">Phụ cấp</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 65px;">Khấu trừ</th>
+                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 85px;">Thực nhận</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${DB.teachers.map((t, idx) => {
+                            const calc = this.calculateSalary(t, monthStr);
+                            totalNet += calc.netSalary;
+                            return `<tr>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: center;">${idx + 1}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: center;"><b>${t.id}</b></td>
+                                <td style="border: 1px solid #000; padding: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><b>${t.name}</b></td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">${t.type}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: right;">${Number(t.baseSalary||0).toLocaleString('vi-VN')}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: center;">${calc.totalAssigned}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: center;"><b>${calc.totalAttended}</b></td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: right;">${calc.teachingSalary.toLocaleString('vi-VN')}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: right; color:green;">+${calc.bonus.toLocaleString('vi-VN')}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: right; color:red;">-${calc.deduct.toLocaleString('vi-VN')}</td>
+                                <td style="border: 1px solid #000; padding: 5px; text-align: right; font-weight:bold; color:#FF6B00;">${calc.netSalary.toLocaleString('vi-VN')}</td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 12px; text-align: right; font-size: 13px; font-weight: bold; color: #FF6B00;">
+                    TỔNG QUỸ LƯƠNG THỰC NHẬN: ${totalNet.toLocaleString('vi-VN')} VNĐ
+                </div>
+
+                <!-- Bản trình kí -->
+                <div style="display: flex; justify-content: space-between; margin-top: 35px; text-align: center; page-break-inside: avoid;">
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic; color: #374151;">Người lập biểu</div>
+                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                    </div>
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic; color: #374151;">Kế toán trưởng</div>
+                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                    </div>
+                    <div style="width: 30%;">
+                        <div style="font-weight: bold; font-style: italic; color: #374151;">Giám đốc phê duyệt</div>
+                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, đóng dấu, ghi rõ họ tên)</div>
+                        <div style="height: 50px;"></div>
+                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('m5-allSalaryPDFContent').innerHTML = html;
+            document.getElementById('m5-modalAllSalaryPDF').classList.add('active');
+        },
+
+        sendSalaryNotification: function(tId, monthStr) {
+            const t = DB.teachers.find(i => i.id === tId);
+            const calc = this.calculateSalary(t, monthStr);
+            alert(`Đã gửi thông báo lương tháng ${monthStr} thành công đến giáo viên ${t.name} (SĐT: ${t.phone}) với mức thực nhận: ${calc.netSalary.toLocaleString('vi-VN')} VNĐ!`);
+        },
+
+        previewBranchExcel: function() {
+            const tbody = document.getElementById('m5-branchPreviewBody');
+            tbody.innerHTML = '';
+            
+            if (DB.branches.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; border: 1px solid #000; padding: 8px;">Không có dữ liệu chi nhánh</td></tr>`;
+            } else {
+                DB.branches.forEach((b, idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
+                            <td style="border: 1px solid #000; padding: 6px;">${b.district || ''} - ${b.province || ''}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;"><b>${b.id}</b></td>
+                            <td style="border: 1px solid #000; padding: 6px;"><b>${b.name}</b></td>
+                            <td style="border: 1px solid #000; padding: 6px;">${b.addressNew || b.address || ''}</td>
+                            <td style="border: 1px solid #000; padding: 6px;">${b.rep || ''}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${b.phone || ''}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${(b.classList || []).length}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: right;">${Number(b.fee || 0).toLocaleString('vi-VN')}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('m5-previewTime').innerText = new Date().toLocaleDateString('vi-VN');
+            document.getElementById('m5-modalBranchPreview').classList.add('active');
+        },
+
+        downloadBranchExcelFromPreview: function() {
+            const wb = XLSX.utils.book_new();
+            const excelData = DB.branches.map((b, idx) => ({
+                "STT": idx + 1,
+                "Khu vực": `${b.district || ''} - ${b.province || ''}`,
+                "Mã chi nhánh": b.id,
+                "Tên chi nhánh": b.name,
+                "Địa chỉ": b.addressNew || b.address || '',
+                "Người đại diện": b.rep || '',
+                "Điện thoại": b.phone || '',
+                "Số lớp": (b.classList || []).length,
+                "Học phí": Number(b.fee || 0)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            if(!ws['!printOptions']) ws['!printOptions'] = {};
+            ws['!pageSetup'] = { fitToWidth: 1, fitToHeight: 0, orientation: "landscape" };
+
+            XLSX.utils.book_append_sheet(wb, ws, "Danh Sách Chi Nhánh");
+            XLSX.writeFile(wb, `Danh_Sach_Chi_Nhanh_${new Date().toISOString().slice(0,10)}.xlsx`);
+            CoreSystem.closeModal('m5-modalBranchPreview');
+        },
+
         showBranchDetail: function(bId, monthStr) {
             const branch = DB.branches.find(b => b.id === bId);
             const slots = DB.timetable.filter(s => s.branchId === bId && s.date.startsWith(monthStr));
@@ -1781,6 +2174,7 @@
             }).join('');
             document.getElementById('m5-modalBranchDetail').classList.add('active');
         },
+
         showTeacherDetail: function(tId, monthStr) {
             const teacher = DB.teachers.find(t => t.id === tId);
             const slots = DB.timetable.filter(s => s.teacherId === tId && s.date.startsWith(monthStr));
@@ -1801,6 +2195,7 @@
             }).join('');
             document.getElementById('m5-modalTeacherDetail').classList.add('active');
         },
+
         exportAllExcel: function() {
             const wb = XLSX.utils.book_new();
             const monthStr = document.getElementById('m5-reportMonth').value;
@@ -1820,6 +2215,7 @@
 
             XLSX.writeFile(wb, `Bao_Cao_CRM_Thandong_${monthStr}.xlsx`);
         },
+
         exportSalaryExcel: function() {
             this.exportAllExcel();
         }
@@ -1865,5 +2261,101 @@
         CoreSystem.init();
     };
 </script>
+<!-- MODAL XEM TRƯỚC BÁO CÁO CHI NHÁNH TRƯỚC KHI TẢI -->
+<div class="modal-overlay" id="m5-modalBranchPreview">
+    <div class="modal-box" style="max-width: 1100px; background: #fff; border: 3px solid #FF6B00;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); color: white; border-top-left-radius: 17px; border-top-right-radius: 17px; padding: 15px 25px;">
+            <div class="modal-title" style="color: white;"><i class="fa-solid fa-file-pdf" style="color: #FFFFFF;"></i> <span style="text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Xem Trước & Tải PDF Báo Cáo Chi Nhánh</span></div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; color: white; font-size: 18px;" onclick="CoreSystem.closeModal('m5-modalBranchPreview')"></i>
+        </div>
+        
+        <div id="m5-branchPrintArea" style="padding: 25px; font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; background: #fff;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-weight: 800; font-size: 16px; text-transform: uppercase; color: #FF6B00; letter-spacing: 0.5px;">CÔNG TY TNHH TNL M'DRĂK</div>
+                <div style="font-weight: bold; font-size: 15px; text-transform: uppercase; margin-top: 5px; color: #1F2937;">BÁO CÁO DANH SÁCH CHI NHÁNH KHỐI SCHOOLING</div>
+                <div style="font-style: italic; font-size: 12px; margin-top: 4px; color: #4B5563;">Thời điểm xuất báo cáo: <span id="m5-previewTime" style="color: #FF6B00; font-weight: bold;"></span></div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #FFF5EE; text-align: center;">
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">STT</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Khu vực</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Mã chi nhánh</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Tên chi nhánh</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Địa chỉ</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Người đại diện</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Điện thoại</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Số lớp</th>
+                        <th style="border: 1px solid #FF6B00; padding: 8px; color: #FF6B00; font-weight: bold;">Học phí (VNĐ)</th>
+                    </tr>
+                </thead>
+                <tbody id="m5-branchPreviewBody"></tbody>
+            </table>
+
+            <!-- Bản trình kí -->
+            <div style="display: flex; justify-content: space-between; margin-top: 40px; text-align: center; page-break-inside: avoid;">
+                <div style="width: 30%;">
+                    <div style="font-weight: bold; font-style: italic; color: #374151;">Người lập biểu</div>
+                    <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
+                    <div style="height: 60px;"></div>
+                    <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                </div>
+                <div style="width: 30%;">
+                    <div style="font-weight: bold; font-style: italic; color: #374151;">Kế toán trưởng</div>
+                    <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
+                    <div style="height: 60px;"></div>
+                    <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                </div>
+                <div style="width: 30%;">
+                    <div style="font-weight: bold; font-style: italic; color: #374151;">Giám đốc phê duyệt</div>
+                    <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, đóng dấu, ghi rõ họ tên)</div>
+                    <div style="height: 60px;"></div>
+                    <div style="font-weight: bold; color: #FF6B00;">___________________</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; border-top: 2px solid #FFF5EE; padding: 15px 20px; background: #FAFAFA; border-bottom-left-radius: 17px; border-bottom-right-radius: 17px;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalBranchPreview')">Đóng</button>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Tải / In PDF Chính Thức</button>
+            <button class="btn btn-green" onclick="Module5_Report.downloadBranchExcelFromPreview()"><i class="fa-solid fa-download"></i> Tải File Excel</button>
+        </div>
+    </div>
+</div>
+<!-- MODAL XEM TRƯỚC PDF BÁO CÁO LƯƠNG CÁ NHÂN GIÁO VIÊN -->
+<div class="modal-overlay" id="m5-modalTeacherSalaryPDF">
+    <div class="modal-box" style="max-width: 900px; background: #fff; border: 3px solid #FF6B00;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); color: white;">
+            <div class="modal-title" style="color: white;"><i class="fa-solid fa-file-pdf"></i> Xem Trước Phiếu Lương Giáo Viên</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; color: white;" onclick="CoreSystem.closeModal('m5-modalTeacherSalaryPDF')"></i>
+        </div>
+        <div id="m5-teacherSalaryPDFContent" style="padding: 25px; font-family: 'Times New Roman', Times, serif; color: #000; background: #fff;">
+            <!-- Render bằng JS -->
+        </div>
+        <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; border-top: 2px solid #FFF5EE; padding: 15px; background: #FAFAFA;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalTeacherSalaryPDF')">Đóng</button>
+            <button class="btn btn-primary" id="m5-btnSendTeacherNotify" onclick=""><i class="fa-solid fa-paper-plane"></i> Gửi Thông Báo Cho Giáo Viên</button>
+            <button class="btn btn-green" onclick="window.print()"><i class="fa-solid fa-print"></i> In / Tải PDF Chính Thức</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL XEM TRƯỚC PDF BÁO CÁO LƯƠNG TẤT CẢ GIÁO VIÊN -->
+<div class="modal-overlay" id="m5-modalAllSalaryPDF">
+    <div class="modal-box" style="max-width: 1150px; background: #fff; border: 3px solid #FF6B00;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); color: white;">
+            <div class="modal-title" style="color: white;"><i class="fa-solid fa-file-pdf"></i> Xem Trước Bảng Lương Tổng Hợp Toàn Bộ Giáo Viên</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; color: white;" onclick="CoreSystem.closeModal('m5-modalAllSalaryPDF')"></i>
+        </div>
+        <div id="m5-allSalaryPDFContent" style="padding: 25px; font-family: 'Times New Roman', Times, serif; color: #000; background: #fff; overflow-x: auto;">
+            <!-- Render bằng JS -->
+        </div>
+        <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; border-top: 2px solid #FFF5EE; padding: 15px; background: #FAFAFA;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalAllSalaryPDF')">Đóng</button>
+            <button class="btn btn-green" onclick="window.print()"><i class="fa-solid fa-print"></i> In / Tải PDF Tất Cả Lương</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
