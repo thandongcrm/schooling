@@ -145,10 +145,13 @@
         <ul class="nav-menu">
             <li class="nav-item active" onclick="CoreSystem.switchTab('overview')"><i class="fa-solid fa-chart-pie"></i> 1. TỔNG QUAN</li>
             <li class="nav-item" onclick="CoreSystem.switchTab('branch')"><i class="fa-solid fa-code-branch"></i> 2. CHI NHÁNH</li>
-            <li class="nav-item" onclick="CoreSystem.switchTab('teacher')"><i class="fa-solid fa-user-tie"></i> 3. GIÁO VIÊN</li>
-            <li class="nav-item" onclick="CoreSystem.switchTab('timetable')"><i class="fa-solid fa-calendar-days"></i> 4. THỜI KHÓA BIỂU</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('teacher')"><i class="fa-solid fa-user-tie"></i> 3. GIÁO VIÊN & NHÂN VIÊN</li>
+<li class="nav-item" onclick="CoreSystem.switchTab('teacher')"><i class="fa-solid fa-user-tie"></i> 3.1 QUẢN LÝ GIÁO VIÊN</li>
+            <li class="nav-item" onclick="CoreSystem.switchTab('employee')"><i class="fa-solid fa-users-gear"></i> 3.2 QUẢN LÝ NHÂN VIÊN</li>            
+<li class="nav-item" onclick="CoreSystem.switchTab('timetable')"><i class="fa-solid fa-calendar-days"></i> 4. THỜI KHÓA BIỂU</li>
             <li class="nav-item" onclick="CoreSystem.switchTab('report')"><i class="fa-solid fa-file-invoice-dollar"></i> 5. BÁO CÁO</li>
-            <li class="nav-item" onclick="Module6_UserPass.openModal()"><i class="fa-solid fa-key"></i> 6. ĐỔI MẬT KHẨU</li>
+		<li class="nav-item" onclick="CoreSystem.switchTab('finance')"><i class="fa-solid fa-wallet"></i> 6. THU CHI</li>            
+		<li class="nav-item" onclick="Module6_UserPass.openModal()"><i class="fa-solid fa-key"></i> 7. ĐỔI MẬT KHẨU</li>
             <li class="nav-item" style="margin-top: auto; color: #EF4444;" onclick="CoreSystem.logout()"><i class="fa-solid fa-right-from-bracket"></i> ĐĂNG XUẤT</li>
         </ul>
     </div>
@@ -237,7 +240,31 @@
                 </table>
             </div>
         </div>
-
+<!-- VIEW 3.2: QUẢN LÝ NHÂN VIÊN -->
+        <div id="employee-section" class="section-view" style="flex: 1; min-width: 0;">
+            <div class="header-title">
+                <span>3.2 Quản Lý Nhân Viên</span>
+                <button class="btn btn-primary" onclick="Module3_2_Employee.openAddModal()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã NV</th>
+                            <th>Họ và Tên</th>
+                            <th>Thông Tin Cá Nhân & Liên Lạc</th>
+                            <th>Tài Khoản & Trạng Thái</th>
+                            <th>Hợp Đồng & Lương Phụ Cấp</th>
+                            <th>Bằng Cấp & Đồ Dùng</th>
+                            <th>Phân Chi Nhánh</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m3-2-employee-table-body"></tbody>
+                </table>
+            </div>
+        </div>
         <!-- VIEW 4: THỜI KHÓA BIỂU -->
         <div id="timetable-section" class="section-view">
             <div class="header-title"><span>4. Quản Lý Thời Khóa Biểu</span></div>
@@ -261,7 +288,7 @@
             <div class="timetable-grid" id="m4-timetableGrid"></div>
         </div>
 
-        <!-- VIEW 5: BÁO CÁO HỆ THỐNG -->
+       <!-- VIEW 5: BÁO CÁO HỆ THỐNG -->
         <div id="report-section" class="section-view">
             <div class="header-title">
                 <span>5. Báo Cáo & Thống Kê</span>
@@ -282,7 +309,8 @@
 
             <div class="tab-buttons">
                 <button class="tab-btn active" id="m5-btn-tab-branch" onclick="Module5_Report.switchSubTab('branch')">Báo Cáo Chi Nhánh</button>
-                <button class="tab-btn" id="m5-btn-tab-salary" onclick="Module5_Report.switchSubTab('salary')">Báo Cáo Tiền Lương</button>
+                <button class="tab-btn" id="m5-btn-tab-salary" onclick="Module5_Report.switchSubTab('salary')">Báo Cáo Lương Giáo Viên</button>
+                <button class="tab-btn" id="m5-btn-tab-employee-salary" onclick="Module5_Report.switchSubTab('employeeSalary')">Báo Cáo Lương Nhân Viên</button>
             </div>
             
             <!-- BÁO CÁO CHI NHÁNH -->
@@ -313,9 +341,9 @@
                 </table>
             </div>
 
-            <!-- BÁO CÁO TIỀN LƯƠNG -->
+            <!-- BÁO CÁO TIỀN LƯƠNG GIÁO VIÊN -->
             <div id="m5-report-salary-view" class="table-container" style="display: none;">
-                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap: 10px;">
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: 10px;">
                     <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Quản lý bảng lương giáo viên. Ô Phụ Cấp và Khấu Trừ có thể nhập tay trực tiếp.</span>
                     <div style="display:flex; gap:8px;">
                         <button class="btn btn-primary" onclick="Module5_Report.previewAllTeacherSalaryPDF()"><i class="fa-solid fa-file-pdf"></i> Xem Trước PDF Tất Cả Giáo Viên</button>
@@ -343,7 +371,35 @@
                     <tbody id="m5-report-salary-body"></tbody>
                 </table>
             </div>
+
+            <!-- BÁO CÁO LƯƠNG NHÂN VIÊN -->
+            <div id="m5-report-employee-salary-view" class="table-container" style="display: none;">
+                <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: 10px;">
+                    <span style="font-size: 13px; font-weight:700; color:var(--primary-orange);"><i class="fa-solid fa-circle-info"></i> Bảng lương nhân viên tự động đồng bộ theo số liệu chấm công (Thứ 2 - Thứ 7).</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã NV</th>
+                            <th>Họ và Tên</th>
+                            <th>Thông Tin Liên Lạc</th>
+                            <th>Hợp Đồng</th>
+                            <th>Lương Định Mức</th>
+                            <th>Ngày Công Chuẩn (T2-T7)</th>
+                            <th>Ngày Chấm Công Thực Tế</th>
+                            <th>Lương Cơ Bản Theo Công</th>
+                            <th>Phụ Cấp</th>
+                            <th>Khấu Trừ</th>
+                            <th>Lương Thực Nhận</th>
+                            <th>Thao Tác PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody id="m5-report-employee-salary-body"></tbody>
+                </table>
+            </div>
         </div>
+
             <!-- BÁO CÁO TIỀN LƯƠNG -->
             <div id="m5-report-salary-view" class="table-container" style="display: none;">
                 <div style="padding: 12px 16px; background: #FFF5EE; border-bottom: 1px solid #FFD8C2; display:flex; justify-content:space-between; align-items:center; flex-wrap:gap: 10px;">
@@ -374,6 +430,91 @@
                     <tbody id="m5-report-salary-body"></tbody>
                 </table>
             </div>
+<!-- VIEW 6: QUẢN LÝ THU CHI & LỢI NHUẬN -->
+        <div id="finance-section" class="section-view" style="flex: 1; min-width: 0;">
+            <div class="header-title">
+                <span>6. Quản Lý Thu - Chi & Lợi Nhuận</span>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="Module6_Finance.openAddThuModal()"><i class="fa-solid fa-plus"></i> Thêm Thu Tiền</button>
+                    <button class="btn btn-danger" onclick="Module6_Finance.openAddChiModal()"><i class="fa-solid fa-minus"></i> Thêm Chi Tiền</button>
+                    <button class="btn btn-secondary" onclick="Module6_Finance.openManageCategoriesModal()"><i class="fa-solid fa-list-check"></i> Cấu Hình Tiểu Mục Phí</button>
+                </div>
+            </div>
+
+            <!-- BẢNG TỔNG QUAN TÀI CHÍNH -->
+            <div class="overview-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 20px;">
+                <div class="stat-card" style="border-left: 5px solid var(--primary-green);">
+                    <div class="stat-title">Tổng Thu Hệ Thống</div>
+                    <div class="stat-value" id="f-total-thu" style="color:var(--primary-green);">0 VNĐ</div>
+                    <div class="stat-desc">Cộng dồn tất cả các khoản thu</div>
+                </div>
+                <div class="stat-card" style="border-left: 5px solid #EF4444;">
+                    <div class="stat-title">Tổng Chi Hệ Thống</div>
+                    <div class="stat-value" id="f-total-chi" style="color:#EF4444;">0 VNĐ</div>
+                    <div class="stat-desc">Đã đồng bộ tiểu mục chi phí</div>
+                </div>
+                <div class="stat-card" style="border-left: 5px solid var(--primary-orange);">
+                    <div class="stat-title">Lợi Nhuận Ròng</div>
+                    <div class="stat-value" id="f-net-profit">0 VNĐ</div>
+                    <div class="stat-desc">Tổng Thu - Tổng Chi</div>
+                </div>
+                <div class="stat-card" style="border-left: 5px solid #8B5CF6;">
+                    <div class="stat-title">Tỉ Suất Lợi Nhuận Ròng</div>
+                    <div class="stat-value" id="f-profit-margin" style="color:#8B5CF6;">0%</div>
+                    <div class="stat-desc">(Lợi nhuận / Tổng thu) * 100</div>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC TÀI CHÍNH -->
+            <div class="timetable-controls" style="padding: 15px; margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight:700;">Lọc Chi Nhánh:</label>
+                    <select id="f-filterBranch" class="form-control" style="width: 200px;" onchange="Module6_Finance.render()"><option value="">-- Tất cả chi nhánh --</option></select>
+                    
+                    <label style="font-weight:700; margin-left: 10px;">Năm:</label>
+                    <select id="f-filterYear" class="form-control" style="width: 110px;" onchange="Module6_Finance.render()">
+                        <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                    </select>
+
+                    <label style="font-weight:700; margin-left: 10px;">Tháng:</label>
+                    <select id="f-filterMonth" class="form-control" style="width: 130px;" onchange="Module6_Finance.render()">
+                        <option value="">-- Cả năm --</option>
+                        <option value="01">Tháng 1</option><option value="02">Tháng 2</option><option value="03">Tháng 3</option>
+                        <option value="04">Tháng 4</option><option value="05">Tháng 5</option><option value="06">Tháng 6</option>
+                        <option value="07">Tháng 7</option><option value="08" selected>Tháng 8</option><option value="09">Tháng 9</option>
+                        <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- DANH SÁCH THU CHI -->
+            <div class="tab-buttons" style="margin-bottom: 10px;">
+                <button class="tab-btn active" id="f-btn-tab-thu" onclick="Module6_Finance.switchTab('thu')">Danh Sách Thu Tiền</button>
+                <button class="tab-btn" id="f-btn-tab-chi" onclick="Module6_Finance.switchTab('chi')">Danh Sách Chi Tiền</button>
+            </div>
+
+            <div id="f-table-thu-container" class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th><th>Mã Phiếu</th><th>Chi Nhánh</th><th>Ngày Nộp</th><th>Số Tiền</th><th>Ghi Chú</th><th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="f-thu-table-body"></tbody>
+                </table>
+            </div>
+
+            <div id="f-table-chi-container" class="table-container" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th><th>Mã Phiếu</th><th>Chi Nhánh</th><th>Ngày Chi</th><th>Người Chi</th><th>Loại Phí</th><th>Tiểu Mục Phí</th><th>Số Tiền</th><th>Ghi Chú</th><th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="f-chi-table-body"></tbody>
+                </table>
+            </div>
+        </div>
         </div>
 <!-- ================= MODAL CỦA CÁC MỤC CON ================= -->
 
@@ -675,7 +816,97 @@
         </form>
     </div>
 </div>
+<!-- MODAL QUẢN LÝ NHÂN VIÊN -->
+<div class="modal-overlay" id="m3-2-modalEmployee">
+    <div class="modal-box" style="max-width: 950px;">
+        <div class="modal-header">
+            <div class="modal-title" id="m3-2-modalTitle">Thêm Nhân Viên Mới</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m3-2-modalEmployee')"></i>
+        </div>
+        <form onsubmit="Module3_2_Employee.save(event)">
+            <input type="hidden" id="m3-2-empId">
+            <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 8px;"><i class="fa-solid fa-id-card"></i> 1. Thông Tin Chung</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Mã Nhân Viên (Tự sinh)</label><input type="text" id="m3-2-empCode" class="form-control" readonly style="background-color: #f3f4f6;"></div>
+                <div class="form-group"><label>Họ và Tên (*)</label><input type="text" id="m3-2-empName" class="form-control" required placeholder="Nhập họ và tên nhân viên"></div>
+                <div class="form-group"><label>Giới Tính (*)</label><select id="m3-2-empGender" class="form-control"><option value="Nam">Nam</option><option value="Nữ">Nữ</option><option value="Khác">Khác</option></select></div>
+                <div class="form-group"><label>Ngày Sinh (*)</label><input type="date" id="m3-2-empDob" class="form-control" required></div>
+                <div class="form-group"><label>Số CCCD / CMND (*)</label><input type="text" id="m3-2-empCccd" class="form-control" required placeholder="Nhập 12 số CCCD"></div>
+                <div class="form-group"><label>Điện Thoại (*)</label><input type="text" id="m3-2-empPhone" class="form-control" required placeholder="Số điện thoại liên hệ"></div>
+                <div class="form-group full-width"><label>Địa Chỉ (Trước sáp nhập)</label><input type="text" id="m3-2-empAddressOld" class="form-control" placeholder="Địa chỉ cũ trước sáp nhập"></div>
+                <div class="form-group full-width"><label>Địa Chỉ (Sau sáp nhập) (*)</label><input type="text" id="m3-2-empAddressNew" class="form-control" required placeholder="Địa chỉ hành chính mới"></div>
+            </div>
 
+            <div style="font-weight: 800; color: var(--primary-orange); margin: 20px 0 8px 0;"><i class="fa-solid fa-key"></i> 2. Thông Tin Tài Khoản Đăng Nhập</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Email Đăng Nhập (Tự sinh gợi ý)</label><input type="email" id="m3-2-empEmail" class="form-control" required placeholder="nhanvien@thandong.edu.vn"></div>
+                <div class="form-group"><label>Mật Khẩu (*)</label><input type="text" id="m3-2-empPass" class="form-control" required value="123456"></div>
+            </div>
+
+            <div style="font-weight: 800; color: var(--primary-orange); margin: 20px 0 8px 0;"><i class="fa-solid fa-briefcase"></i> 3. Thông Tin Việc Làm & Lương Thưởng</div>
+            <div class="form-grid">
+                <div class="form-group"><label>Hình Thức Hợp Đồng (*)</label><select id="m3-2-empContractType" class="form-control"><option value="Dưới 1 năm">Dưới 1 năm</option><option value="1 năm">1 năm</option><option value="Trên 1 năm">Trên 1 năm</option></select></div>
+                <div class="form-group"><label>Lương Định Mức (VNĐ) (*)</label><input type="number" id="m3-2-empBaseSalary" class="form-control" required min="0" placeholder="Lương cơ bản"></div>
+                <div class="form-group"><label>Phụ Cấp (VNĐ)</label><input type="number" id="m3-2-empAllowances" class="form-control" min="0" value="0"></div>
+                <div class="form-group"><label>Khấu Trừ (VNĐ)</label><input type="number" id="m3-2-empDeductions" class="form-control" min="0" value="0"></div>
+                <div class="form-group"><label>Ngày Bắt Đầu Làm Việc (*)</label><input type="date" id="m3-2-empWorkDate" class="form-control" required></div>
+                <div class="form-group"><label>Ngày Nghỉ Việc (Nếu có)</label><input type="date" id="m3-2-empQuitDate" class="form-control" onchange="Module3_2_Employee.onQuitDateChange()"></div>
+                <div class="form-group full-width"><label>Trạng Thái Làm Việc</label><input type="text" id="m3-2-empStatus" class="form-control" readonly style="background-color: #f3f4f6; font-weight: bold; color: var(--primary-green);" value="Đang làm việc"></div>
+            </div>
+
+            <!-- PHÂN CHI NHÁNH -->
+            <div style="margin-top: 20px;">
+                <label style="font-weight: 800; color: var(--primary-orange); display: block; margin-bottom: 6px;"><i class="fa-solid fa-code-branch"></i> 4. Phân Chi Nhánh Làm Việc (*)</label>
+                <div style="margin-bottom: 6px;">
+                    <label style="font-size: 13px; font-weight: 700; cursor: pointer; color: var(--primary-orange);">
+                        <input type="checkbox" id="m3-2-empSelectAllBranches" onchange="Module3_2_Employee.toggleSelectAllBranches(this)"> Chọn Tất Cả Chi Nhánh
+                    </label>
+                </div>
+                <div class="multiselect-container" id="m3-2-empBranchContainer"></div>
+            </div>
+
+            <!-- BẰNG CẤP -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px;"><i class="fa-solid fa-certificate"></i> 5. Danh Sách Bằng Cấp / Chứng Chỉ</div>
+                <div class="form-grid" style="background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <div class="form-group"><label>Tên Bằng Cấp</label><input type="text" id="m3-2-degName" class="form-control" placeholder="VD: Cử nhân Kế toán"></div>
+                    <div class="form-group"><label>Nơi Cấp</label><input type="text" id="m3-2-degIssuer" class="form-control" placeholder="VD: Đại học Kinh Tế"></div>
+                    <div class="form-group"><label>Năm Cấp</label><input type="number" id="m3-2-degYear" class="form-control" placeholder="2021"></div>
+                    <div class="form-group" style="justify-content: flex-end;"><button type="button" class="btn btn-green" onclick="Module3_2_Employee.addDegreeToList()"><i class="fa-solid fa-plus"></i> Thêm Bằng Cấp</button></div>
+                </div>
+                <div class="table-container" style="margin-top: 10px;">
+                    <table>
+                        <thead><tr style="background: #F3F4F6;"><th>STT</th><th>Tên Bằng Cấp</th><th>Nơi Cấp</th><th>Năm Cấp</th><th>Thao Tác</th></tr></thead>
+                        <tbody id="m3-2-degree-list-body"><tr><td colspan="5" style="text-align:center; color:#9CA3AF;">Chưa có bằng cấp</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ĐỒ DÙNG CẤP PHÁT -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--gray-200);">
+                <div style="font-weight: 800; color: var(--primary-orange); margin-bottom: 12px;"><i class="fa-solid fa-toolbox"></i> 6. Đồ Dùng Cấp Phát Cho Nhân Viên</div>
+                <div class="form-grid" style="background: #FFF5EE; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary-orange);">
+                    <div class="form-group"><label>Tên Đồ Dùng</label><input type="text" id="m3-2-toolName" class="form-control" placeholder="VD: Laptop, Phím chuột..."></div>
+                    <div class="form-group"><label>Số Lượng</label><input type="number" id="m3-2-toolQty" class="form-control" min="1" value="1"></div>
+                    <div class="form-group"><label>Ngày Cấp</label><input type="date" id="m3-2-toolReceiveDate" class="form-control"></div>
+                    <div class="form-group"><label>Ngày Trả</label><input type="date" id="m3-2-toolReturnDate" class="form-control"></div>
+                    <div class="form-group full-width" style="text-align: right; margin-bottom: 0;"><button type="button" class="btn btn-green" onclick="Module3_2_Employee.addToolToList()"><i class="fa-solid fa-plus"></i> Thêm Đồ Dùng</button></div>
+                </div>
+                <div class="table-container" style="margin-top: 10px;">
+                    <table>
+                        <thead><tr style="background: #F3F4F6;"><th>STT</th><th>Tên Đồ Dùng</th><th>Số Lượng</th><th>Ngày Cấp</th><th>Ngày Trả</th><th>Thao Tác</th></tr></thead>
+                        <tbody id="m3-2-tool-list-body"><tr><td colspan="6" style="text-align:center; color:#9CA3AF;">Chưa có đồ dùng cấp phát</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: right; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('m3-2-modalEmployee')">Hủy</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu Nhân Viên</button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- MODAL MỤC 4: THÊM / SỬA CA DẠY -->
 <div class="modal-overlay" id="m4-modalSlot">
     <div class="modal-box">
@@ -782,7 +1013,7 @@
 <div class="modal-overlay" id="m6-modalChangePass">
     <div class="modal-box" style="max-width: 450px;">
         <div class="modal-header">
-            <div class="modal-title">6. Đổi Mật Khẩu Tài Khoản</div>
+            <div class="modal-title">7. Đổi Mật Khẩu Tài Khoản</div>
             <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('m6-modalChangePass')"></i>
         </div>
         <form onsubmit="Module6_UserPass.save(event)">
@@ -803,57 +1034,86 @@
     /* ==========================================================================
        0. KHỞI TẠO CƠ SỞ DỮ LIỆU ĐỒNG BỘ WEB (FIREBASE REALTIME DATABASE)
        ========================================================================== */
-    const DB = {
+   const DB = {
         branches: [],
         teachers: [],
         timetable: [],
         manualStudents: {},
         salaryAdjustments: {},
+        financeThu: [],
+        financeChi: [],
+employees: [],
+attendance: {},
+        expenseCategories: {
+            'Cố định': ['Lương mặt bằng', 'Điện nước', 'Internet', 'Lương hành chính'],
+            'Phát sinh': ['Sửa chữa thiết bị', 'Văn phòng phẩm', 'Marketing', 'Tiếp khách']
+        },
 
-        // Khởi tạo lắng nghe dữ liệu thời gian thực từ Firebase Realtime Database
         initFirebaseListeners: function() {
-    const parseData = (data) => data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
+            const parseData = (data) => data ? (Array.isArray(data) ? data.filter(Boolean) : Object.values(data)) : [];
 
-    // Lắng nghe dữ liệu Chi Nhánh
-    database.ref('branches').on('value', (snapshot) => {
-        const data = snapshot.val();
-        this.branches = parseData(data);
-        CoreSystem.refreshAllModules();
-    }, (error) => {
-        console.error("Lỗi đọc branches:", error);
-    });
+            database.ref('branches').on('value', (snapshot) => {
+                this.branches = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
 
-    // Lắng nghe dữ liệu Giáo Viên
-    database.ref('teachers').on('value', (snapshot) => {
-        const data = snapshot.val();
-        this.teachers = parseData(data);
-        CoreSystem.refreshAllModules();
-    });
+            database.ref('teachers').on('value', (snapshot) => {
+                this.teachers = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
 
-    // Lắng nghe dữ liệu Thời Khóa Biểu
-    database.ref('timetable').on('value', (snapshot) => {
-        const data = snapshot.val();
-        this.timetable = parseData(data);
-        CoreSystem.refreshAllModules();
-    });
+            database.ref('timetable').on('value', (snapshot) => {
+                this.timetable = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
+database.ref('attendance').on('value', (snapshot) => {
+                this.attendance = snapshot.val() || {};
+                CoreSystem.refreshAllModules();
+            });
 
-    database.ref('manualStudents').on('value', (snapshot) => {
-        this.manualStudents = snapshot.val() || {};
-        CoreSystem.refreshAllModules();
-    });
+            database.ref('manualStudents').on('value', (snapshot) => {
+                this.manualStudents = snapshot.val() || {};
+                CoreSystem.refreshAllModules();
+            });
 
-    database.ref('salaryAdjustments').on('value', (snapshot) => {
-        this.salaryAdjustments = snapshot.val() || {};
-        CoreSystem.refreshAllModules();
-    });
-},
-        // Đồng bộ dữ liệu lên Firebase
+            database.ref('salaryAdjustments').on('value', (snapshot) => {
+                this.salaryAdjustments = snapshot.val() || {};
+                CoreSystem.refreshAllModules();
+            });
+
+            database.ref('financeThu').on('value', (snapshot) => {
+                this.financeThu = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
+database.ref('employees').on('value', (snapshot) => {
+                this.employees = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
+
+            database.ref('financeChi').on('value', (snapshot) => {
+                this.financeChi = parseData(snapshot.val());
+                CoreSystem.refreshAllModules();
+            });
+
+            database.ref('expenseCategories').on('value', (snapshot) => {
+                this.expenseCategories = snapshot.val() || {
+                    'Cố định': ['Lương mặt bằng', 'Điện nước', 'Internet', 'Lương hành chính'],
+                    'Phát sinh': ['Sửa chữa thiết bị', 'Văn phòng phẩm', 'Marketing', 'Tiếp khách']
+                };
+                CoreSystem.refreshAllModules();
+            });
+        },
+
         save: function() {
             database.ref('branches').set(this.branches);
             database.ref('teachers').set(this.teachers);
             database.ref('timetable').set(this.timetable);
             database.ref('manualStudents').set(this.manualStudents);
             database.ref('salaryAdjustments').set(this.salaryAdjustments);
+            database.ref('financeThu').set(this.financeThu || []);
+            database.ref('financeChi').set(this.financeChi || []);
+            database.ref('expenseCategories').set(this.expenseCategories || {});
+	database.ref('employees').set(this.employees || []);
         }
     };
 
@@ -871,12 +1131,24 @@
             Module1_Overview.render();
             Module2_Branch.render();
             Module3_Teacher.render();
+	Module3_2_Employee.render();
             Module4_Timetable.render();
             Module5_Report.render();
+	Module6_Finance.render();
         },
         switchTab: function(tabName) {
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+// Hiển thị tab tương ứng
+            if (tabName === 'employee') {
+                const sec = document.getElementById('employee-section');
+                if (sec) sec.classList.add('active');
+                Module3_2_Employee.render(); // <--- Gọi vẽ lại danh sách nhân viên
+            } else if (tabName === 'teacher') {
+                const sec = document.getElementById('teacher-section');
+                if (sec) sec.classList.add('active');
+                Module3_Teacher.render();
+            }
             if(window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
             document.getElementById(`${tabName}-section`).classList.add('active');
         },
@@ -1464,8 +1736,8 @@
         }
     };
 
-    /* ==========================================================================
-       MỤC 4: QUẢN LÝ THỜI KHÓA BIỂU
+   /* ==========================================================================
+       MỤC 4: QUẢN LÝ THỜI KHÓA BIỂU (ĐÃ SỬA CHUẨN THỨ VÀ NGÀY)
        ========================================================================== */
     const Module4_Timetable = {
         render: function() {
@@ -1491,7 +1763,7 @@
             const grid = document.getElementById('m4-timetableGrid');
             grid.innerHTML = '';
 
-            const dayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+            const dayNames = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
 
             dates.forEach((dateObj, idx) => {
                 const dateStr = dateObj.toISOString().split('T')[0];
@@ -1529,18 +1801,23 @@
                 `;
             });
         },
-        getDatesOfWeek: function(y, w) {
-            const simple = new Date(y, 0, 1 + (w - 1) * 7);
-            const dow = simple.getDay();
-            const ISOweekStart = simple;
-            if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-            else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+
+        // HÀM TÍNH TOÁN CHUẨN XÁC NGÀY BẮT ĐẦU TỪ THỨ HAI ĐẾN CHỦ NHẬT TRONG TUẦN ISO
+getDatesOfWeek: function(y, w) {
+            // Tính chuẩn mốc thứ Hai và cộng bù +1 ngày để khớp tuyệt đối múi giờ Việt Nam
+            const simple = new Date(y, 0, 4);
+            const dayOfWeek = simple.getDay() || 7;
+            const isoWeekStart = new Date(simple);
+            isoWeekStart.setDate(simple.getDate() - dayOfWeek + 1);
             
+            const targetMonday = new Date(isoWeekStart);
+            targetMonday.setDate(isoWeekStart.getDate() + (w - 1) * 7 + 1); // Cộng thêm 1 ngày để dịch đúng mốc Thứ Hai
+
             const result = [];
             for (let i = 0; i < 7; i++) {
-                const d = new Date(ISOweekStart);
-                d.setDate(d.getDate() + i);
-                result.push(d);
+                const nextDay = new Date(targetMonday);
+                nextDay.setDate(targetMonday.getDate() + i);
+                result.push(nextDay);
             }
             return result;
         },
@@ -1552,10 +1829,12 @@
             selector.value = CoreSystem.getISOWeekString(d);
             this.render();
         },
+
         setToCurrentWeek: function() {
             document.getElementById('m4-weekSelector').value = CoreSystem.getISOWeekString(new Date());
             this.render();
         },
+
         copyPreviousWeekSchedule: function() {
             if(!confirm("Bạn có chắc chắn muốn sao chép toàn bộ thời khóa biểu của tuần trước sang tuần này không?")) return;
             const weekVal = document.getElementById('m4-weekSelector').value;
@@ -1583,6 +1862,7 @@
             DB.save();
             alert(`Đã sao chép thành công ${copyCount} ca dạy từ tuần trước!`);
         },
+
         clearCurrentWeekSchedule: function() {
             if(!confirm("Bạn có chắc chắn muốn XÓA TẤT CẢ lịch dạy trong tuần này không?")) return;
             const weekVal = document.getElementById('m4-weekSelector').value;
@@ -1592,11 +1872,13 @@
             DB.timetable = DB.timetable.filter(s => !curDates.includes(s.date));
             DB.save();
         },
+
         toggleDateType: function() {
             const isSpecific = document.querySelector('input[name="m4-dateType"]:checked').value === 'date';
             document.getElementById('m4-groupSpecificDate').style.display = isSpecific ? 'block' : 'none';
             document.getElementById('m4-groupWeekdays').style.display = isSpecific ? 'none' : 'block';
         },
+
         onBranchChange: function() {
             const bId = document.getElementById('m4-slotBranch').value;
             const classSelect = document.getElementById('m4-slotClass');
@@ -1613,6 +1895,7 @@
             const teachers = DB.teachers.filter(t => t.branchIds ? t.branchIds.includes(bId) : t.branchId === bId);
             teachers.forEach(t => teacherSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`);
         },
+
         onTeacherChange: function() {
             const tId = document.getElementById('m4-slotTeacher').value;
             const t = DB.teachers.find(i => i.id === tId);
@@ -1620,6 +1903,7 @@
                 document.getElementById('m4-slotSubject').value = t.subjectMain || t.subjects || '';
             }
         },
+
         onSubjectTypeChange: function() {
             const tId = document.getElementById('m4-slotTeacher').value;
             const type = document.getElementById('m4-slotSubjectType').value;
@@ -1628,6 +1912,7 @@
                 document.getElementById('m4-slotSubject').value = type === 'Chính' ? (t.subjectMain || t.subjects) : (t.subjectSub || '');
             }
         },
+
         autoSuggestEndTime: function() {
             const startTime = document.getElementById('m4-slotStartTime').value;
             if (!startTime) return;
@@ -1636,6 +1921,7 @@
             endD.setHours(h, m + 90);
             document.getElementById('m4-slotEndTime').value = `${String(endD.getHours()).padStart(2, '0')}:${String(endD.getMinutes()).padStart(2, '0')}`;
         },
+
         openAddModal: function() {
             document.getElementById('m4-slotId').value = '';
             document.getElementById('m4-slotDate').value = new Date().toISOString().split('T')[0];
@@ -1652,6 +1938,7 @@
             document.getElementById('m4-modalTitle').innerText = 'Thêm Ca Dạy Mới';
             document.getElementById('m4-modalSlot').classList.add('active');
         },
+
         save: function(e) {
             e.preventDefault();
             const slotId = document.getElementById('m4-slotId').value;
@@ -1688,6 +1975,7 @@
                 const dates = this.getDatesOfWeek(y, w);
 
                 dates.forEach(dObj => {
+                    // Chuyển đổi getDay() (0 là CN, 1 là T2...) khớp với giá trị checkbox
                     if (checkedDays.includes(dObj.getDay())) {
                         DB.timetable.push({
                             id: 'SL_' + Date.now() + Math.random().toString(36).substr(2, 4),
@@ -1702,11 +1990,13 @@
             DB.save();
             CoreSystem.closeModal('m4-modalSlot');
         },
+
         openAttendanceModal: function(slotId) {
             document.getElementById('m4-attendanceSlotId').value = slotId;
             document.getElementById('m4-attendanceStudents').value = 15;
             document.getElementById('m4-modalAttendance').classList.add('active');
         },
+
         confirmAttendance: function() {
             const slotId = document.getElementById('m4-attendanceSlotId').value;
             const studentsCount = parseInt(document.getElementById('m4-attendanceStudents').value) || 0;
@@ -1718,6 +2008,7 @@
             }
             CoreSystem.closeModal('m4-modalAttendance');
         },
+
         edit: function(id) {
             const slot = DB.timetable.find(s => s.id === id);
             if(!slot) return;
@@ -1734,6 +2025,7 @@
             document.getElementById('m4-slotSubject').value = slot.subject;
             document.getElementById('m4-modalTitle').innerText = 'Chỉnh Sửa Ca Dạy';
         },
+
         delete: function(id) {
             if(confirm('Bạn có chắc chắn muốn xóa ca dạy này?')) {
                 DB.timetable = DB.timetable.filter(s => s.id !== id);
@@ -1742,8 +2034,8 @@
         }
     };
 
-    /* ==========================================================================
-       MỤC 5: BÁO CÁO HỆ THỐNG
+   /* ==========================================================================
+       MỤC 5: BÁO CÁO & THỐNG KÊ (ĐÃ TÍCH HỢP LƯƠNG NHÂN VIÊN & KHÓA THÁNG)
        ========================================================================== */
     const Module5_Report = {
         lockedMonths: {},
@@ -1805,15 +2097,19 @@
         render: function() {
             const currentMonth = document.getElementById('m5-reportMonth').value;
             if (this.currentSubTab === 'branch') this.renderBranchReport(currentMonth);
-            else this.renderSalaryReport(currentMonth);
+            else if (this.currentSubTab === 'salary') this.renderSalaryReport(currentMonth);
+            else if (this.currentSubTab === 'employeeSalary') this.renderEmployeeSalaryReport(currentMonth);
         },
 
         switchSubTab: function(tab) {
             this.currentSubTab = tab;
             document.getElementById('m5-btn-tab-branch').classList.toggle('active', tab === 'branch');
             document.getElementById('m5-btn-tab-salary').classList.toggle('active', tab === 'salary');
+            document.getElementById('m5-btn-tab-employee-salary').classList.toggle('active', tab === 'employeeSalary');
+
             document.getElementById('m5-report-branch-view').style.display = tab === 'branch' ? 'block' : 'none';
             document.getElementById('m5-report-salary-view').style.display = tab === 'salary' ? 'block' : 'none';
+            document.getElementById('m5-report-employee-salary-view').style.display = tab === 'employeeSalary' ? 'block' : 'none';
             this.render();
         },
 
@@ -1910,12 +2206,23 @@
             const monthSlots = DB.timetable.filter(s => s.teacherId === teacher.id && s.date.startsWith(monthStr));
             const attendedSlots = monthSlots.filter(s => s.attended);
 
-            let baseRate = teacher.type === 'Full time' ? (teacher.baseSalary || 0) : 100000;
-            let teachingSalary = teacher.type === 'Full time' ? teacher.baseSalary : attendedSlots.length * baseRate;
+            let teachingSalary = 0;
+            if (teacher.type === 'Full time') {
+                const totalAssigned = monthSlots.length;
+                const baseSalary = teacher.baseSalary || 0;
+                if (totalAssigned > 0) {
+                    teachingSalary = (baseSalary / totalAssigned) * attendedSlots.length;
+                } else {
+                    teachingSalary = 0;
+                }
+            } else {
+                let ratePerSession = teacher.baseSalary || 0;
+                teachingSalary = attendedSlots.length * ratePerSession;
+            }
 
             const adjKey = `${teacher.id}_${monthStr}`;
-            const bonus = DB.salaryAdjustments[adjKey]?.bonus || 0;
-            const deduct = DB.salaryAdjustments[adjKey]?.deduct || 0;
+            const bonus = DB.salaryAdjustments && DB.salaryAdjustments[adjKey] ? (DB.salaryAdjustments[adjKey].bonus || 0) : 0;
+            const deduct = DB.salaryAdjustments && DB.salaryAdjustments[adjKey] ? (DB.salaryAdjustments[adjKey].deduct || 0) : 0;
 
             return {
                 totalAssigned: monthSlots.length,
@@ -1927,67 +2234,111 @@
             };
         },
 
-        previewTeacherSalaryPDF: function(tId, monthStr) {
-            const t = DB.teachers.find(i => i.id === tId);
-            const calc = this.calculateSalary(t, monthStr);
-            const slots = DB.timetable.filter(s => s.teacherId === tId && s.date.startsWith(monthStr));
+        getDaysInMonth: function(year, month) {
+            let date = new Date(year, month - 1, 1);
+            let days = [];
+            while (date.getMonth() === month - 1) {
+                days.push(new Date(date));
+                date.setDate(date.getDate() + 1);
+            }
+            return days;
+        },
+
+        calculateEmployeeSalary: function(emp, monthStr) {
+            const [year, month] = monthStr.split('-').map(Number);
+            const allDays = this.getDaysInMonth(year, month);
+            const standardWorkingDays = allDays.filter(d => d.getDay() !== 0).length; // T2 - T7
+
+            const attKey = `${emp.id}_${monthStr}`;
+            const actualDaysList = (DB.attendance && DB.attendance[attKey]) ? DB.attendance[attKey] : null;
+            const actualAttendanceDays = actualDaysList ? actualDaysList.length : standardWorkingDays;
+
+            const baseSalary = emp.baseSalary || 0;
+            const allowances = emp.allowances || 0;
+            const deductions = emp.deductions || 0;
+
+            let teachingSalary = 0;
+            if (standardWorkingDays > 0) {
+                teachingSalary = (baseSalary / standardWorkingDays) * actualAttendanceDays;
+            }
+            const netSalary = teachingSalary + allowances - deductions;
+
+            return {
+                standardWorkingDays,
+                actualAttendanceDays,
+                teachingSalary,
+                allowances,
+                deductions,
+                netSalary
+            };
+        },
+
+        renderEmployeeSalaryReport: function(monthStr) {
+            const tbody = document.getElementById('m5-report-employee-salary-body');
+            tbody.innerHTML = '';
+            const employees = DB.employees || [];
+
+            if (employees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:#9CA3AF;">Chưa có dữ liệu nhân viên</td></tr>`;
+                return;
+            }
+
+            employees.forEach((emp, idx) => {
+                const calc = this.calculateEmployeeSalary(emp, monthStr);
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td><b>${emp.id}</b></td>
+                    <td><b>${emp.name}</b></td>
+                    <td><b>SĐT:</b> ${emp.phone}<br><b>Email:</b> ${emp.email}</td>
+                    <td>${emp.contractType || 'N/A'}</td>
+                    <td>${Number(emp.baseSalary||0).toLocaleString('vi-VN')} VNĐ</td>
+                    <td style="text-align:center;">${calc.standardWorkingDays} Ngày</td>
+                    <td style="text-align:center;"><b style="color:var(--primary-green);">${calc.actualAttendanceDays} Ngày</b></td>
+                    <td>${calc.teachingSalary.toLocaleString('vi-VN', {maximumFractionDigits:0})} VNĐ</td>
+                    <td style="color:var(--primary-green);">+ ${Number(emp.allowances||0).toLocaleString('vi-VN')} VNĐ</td>
+                    <td style="color:#EF4444;">- ${Number(emp.deductions||0).toLocaleString('vi-VN')} VNĐ</td>
+                    <td><b style="color:var(--primary-orange);">${calc.netSalary.toLocaleString('vi-VN', {maximumFractionDigits:0})} VNĐ</b></td>
+                    <td>
+                        <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="Module5_Report.previewEmployeeSalaryPDF('${emp.id}', '${monthStr}')"><i class="fa-solid fa-file-pdf"></i> Xem PDF</button>
+                    </td>
+                </tr>`;
+            });
+        },
+
+        previewEmployeeSalaryPDF: function(empId, monthStr) {
+            const emp = (DB.employees || []).find(i => i.id === empId);
+            if(!emp) return;
+            const calc = this.calculateEmployeeSalary(emp, monthStr);
+            const [year, month] = monthStr.split('-');
 
             const html = `
                 <div style="text-align: center; margin-bottom: 20px;">
                     <div style="font-weight: 800; font-size: 15px; text-transform: uppercase; color: #FF6B00;">CÔNG TY TNHH TNL M'DRĂK</div>
                     <div style="font-weight: bold; font-size: 13px; text-transform: uppercase; color: #374151;">HỆ THỐNG QUẢN TRỊ SCHOOLING</div>
-                    <div style="font-weight: bold; font-size: 16px; text-transform: uppercase; margin-top: 8px; color: #111827;">PHIẾU XÁC NHẬN LƯƠNG GIÁO VIÊN THÁNG ${monthStr}</div>
+                    <div style="font-weight: bold; font-size: 16px; text-transform: uppercase; margin-top: 8px; color: #111827;">PHIẾU XÁC NHẬN LƯƠNG NHÂN VIÊN THÁNG ${month}/${year}</div>
                 </div>
 
                 <div style="background: #FFF5EE; border: 1px solid #FFD8C2; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 13px; line-height: 1.6;">
                     <div style="display: flex; justify-content: space-between;">
-                        <div><b>Họ và tên GV:</b> ${t.name} (Mã: ${t.id})</div>
-                        <div><b>Điện thoại:</b> ${t.phone}</div>
+                        <div><b>Họ và tên nhân viên:</b> ${emp.name} (Mã: ${emp.id})</div>
+                        <div><b>Điện thoại:</b> ${emp.phone}</div>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <div><b>Hình thức hợp đồng:</b> ${t.type}</div>
-                        <div><b>Lương định mức:</b> ${Number(t.baseSalary||0).toLocaleString('vi-VN')} VNĐ</div>
+                        <div><b>Hình thức hợp đồng:</b> ${emp.contractType || 'N/A'}</div>
+                        <div><b>Lương định mức:</b> ${Number(emp.baseSalary||0).toLocaleString('vi-VN')} VNĐ</div>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
-                        <div><b>Ngân hàng nhận lương:</b> ${t.stk} - ${t.bank}</div>
-                        <div><b>Tổng ca đã điểm danh:</b> ${calc.totalAttended} / ${calc.totalAssigned} ca</div>
+                        <div><b>Số ngày làm việc chuẩn (T2-T7):</b> ${calc.standardWorkingDays} Ngày</div>
+                        <div><b>Số ngày chấm công thực tế:</b> ${calc.actualAttendanceDays} Ngày</div>
                     </div>
                 </div>
 
-                <div style="font-weight: bold; margin-bottom: 8px; color: #FF6B00;">CHI TIẾT CÁC CA DẠY TRONG THÁNG:</div>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
-                    <thead>
-                        <tr style="background-color: #FFF5EE; text-align: center;">
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">STT</th>
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Ngày dạy</th>
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Ca dạy</th>
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Chi nhánh</th>
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Tên lớp</th>
-                            <th style="border: 1px solid #FF6B00; padding: 6px; color:#FF6B00;">Điểm danh & Sĩ số</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${slots.length === 0 ? `<tr><td colspan="6" style="text-align:center; border:1px solid #000; padding:8px;">Không có ca dạy nào trong tháng</td></tr>` : 
-                        slots.map((s, idx) => {
-                            const b = DB.branches.find(i => i.id === s.branchId);
-                            return `<tr>
-                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
-                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${CoreSystem.formatDateVN(s.date)}</td>
-                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${s.startTime} - ${s.endTime}</td>
-                                <td style="border: 1px solid #000; padding: 6px;">${b ? b.name : s.branchId}</td>
-                                <td style="border: 1px solid #000; padding: 6px; font-weight:bold;">${s.classRoom}</td>
-                                <td style="border: 1px solid #000; padding: 6px; text-align: center;">${s.attended ? `Đã DD (${s.studentsCount} HS)` : 'Chưa DD'}</td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
-
                 <div style="background: #F3F4F6; padding: 15px; border-radius: 10px; margin-bottom: 30px; font-size: 13px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Lương dạy học:</span> <b>${calc.teachingSalary.toLocaleString('vi-VN')} VNĐ</b></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Phụ cấp thêm:</span> <b style="color:var(--primary-green);">+ ${calc.bonus.toLocaleString('vi-VN')} VNĐ</b></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Khấu trừ:</span> <b style="color:#EF4444;">- ${calc.deduct.toLocaleString('vi-VN')} VNĐ</b></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Lương theo ngày công:</span> <b>${calc.teachingSalary.toLocaleString('vi-VN', {maximumFractionDigits:0})} VNĐ</b></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Phụ cấp thêm:</span> <b style="color:var(--primary-green);">+ ${Number(emp.allowances||0).toLocaleString('vi-VN')} VNĐ</b></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Khấu trừ:</span> <b style="color:#EF4444;">- ${Number(emp.deductions||0).toLocaleString('vi-VN')} VNĐ</b></div>
                     <hr style="border: 0; border-top: 1px solid #D1D5DB; margin: 8px 0;">
-                    <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: #FF6B00;"><span>THỰC NHẬN:</span> <span>${calc.netSalary.toLocaleString('vi-VN')} VNĐ</span></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: #FF6B00;"><span>THỰC NHẬN:</span> <span>${calc.netSalary.toLocaleString('vi-VN', {maximumFractionDigits:0})} VNĐ</span></div>
                 </div>
 
                 <!-- Bản trình kí -->
@@ -2005,7 +2356,7 @@
                         <div style="font-weight: bold;">___________________</div>
                     </div>
                     <div style="width: 30%;">
-                        <div style="font-weight: bold; font-style: italic;">Giáo viên xác nhận</div>
+                        <div style="font-weight: bold; font-style: italic;">Nhân viên xác nhận</div>
                         <div style="font-size: 11px; font-style: italic;">(Ký, ghi rõ họ tên)</div>
                         <div style="height: 50px;"></div>
                         <div style="font-weight: bold;">___________________</div>
@@ -2013,254 +2364,697 @@
                 </div>
             `;
 
-            document.getElementById('m5-teacherSalaryPDFContent').innerHTML = html;
-            document.getElementById('m5-btnSendTeacherNotify').setAttribute('onclick', `Module5_Report.sendSalaryNotification('${t.id}', '${monthStr}')`);
-            document.getElementById('m5-modalTeacherSalaryPDF').classList.add('active');
-        },
-
-        previewAllTeacherSalaryPDF: function() {
-            const monthStr = document.getElementById('m5-reportMonth').value;
-            let totalNet = 0;
-
-            const html = `
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <div style="font-weight: 800; font-size: 15px; text-transform: uppercase; color: #FF6B00;">CÔNG TY TNHH TNL M'DRĂK</div>
-                    <div style="font-weight: bold; font-size: 12px; text-transform: uppercase; color: #374151; margin-top: 2px;">HỆ THỐNG QUẢN TRỊ SCHOOLING</div>
-                    <div style="font-weight: bold; font-size: 15px; text-transform: uppercase; margin-top: 6px; color: #111827;">BẢNG LƯƠNG TỔNG HỢP TOÀN BỘ GIÁO VIÊN - THÁNG ${monthStr}</div>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed;">
-                    <thead>
-                        <tr style="background-color: #FFF5EE; text-align: center;">
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 35px;">STT</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 55px;">Mã GV</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 110px;">Họ và tên</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 60px;">Hình thức</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 75px;">Lương ĐM</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 40px;">Ca giao</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 40px;">Ca DD</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 75px;">Lương dạy</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 65px;">Phụ cấp</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 65px;">Khấu trừ</th>
-                            <th style="border: 1px solid #FF6B00; padding: 5px; color:#FF6B00; width: 85px;">Thực nhận</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${DB.teachers.map((t, idx) => {
-                            const calc = this.calculateSalary(t, monthStr);
-                            totalNet += calc.netSalary;
-                            return `<tr>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: center;">${idx + 1}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: center;"><b>${t.id}</b></td>
-                                <td style="border: 1px solid #000; padding: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><b>${t.name}</b></td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: center; font-size: 10px;">${t.type}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: right;">${Number(t.baseSalary||0).toLocaleString('vi-VN')}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: center;">${calc.totalAssigned}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: center;"><b>${calc.totalAttended}</b></td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: right;">${calc.teachingSalary.toLocaleString('vi-VN')}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: right; color:green;">+${calc.bonus.toLocaleString('vi-VN')}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: right; color:red;">-${calc.deduct.toLocaleString('vi-VN')}</td>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: right; font-weight:bold; color:#FF6B00;">${calc.netSalary.toLocaleString('vi-VN')}</td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
-
-                <div style="margin-top: 12px; text-align: right; font-size: 13px; font-weight: bold; color: #FF6B00;">
-                    TỔNG QUỸ LƯƠNG THỰC NHẬN: ${totalNet.toLocaleString('vi-VN')} VNĐ
-                </div>
-
-                <!-- Bản trình kí -->
-                <div style="display: flex; justify-content: space-between; margin-top: 35px; text-align: center; page-break-inside: avoid;">
-                    <div style="width: 30%;">
-                        <div style="font-weight: bold; font-style: italic; color: #374151;">Người lập biểu</div>
-                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
-                        <div style="height: 50px;"></div>
-                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
-                    </div>
-                    <div style="width: 30%;">
-                        <div style="font-weight: bold; font-style: italic; color: #374151;">Kế toán trưởng</div>
-                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, ghi rõ họ tên)</div>
-                        <div style="height: 50px;"></div>
-                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
-                    </div>
-                    <div style="width: 30%;">
-                        <div style="font-weight: bold; font-style: italic; color: #374151;">Giám đốc phê duyệt</div>
-                        <div style="font-size: 11px; font-style: italic; color: #6B7280;">(Ký, đóng dấu, ghi rõ họ tên)</div>
-                        <div style="height: 50px;"></div>
-                        <div style="font-weight: bold; color: #FF6B00;">___________________</div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('m5-allSalaryPDFContent').innerHTML = html;
-            document.getElementById('m5-modalAllSalaryPDF').classList.add('active');
-        },
-
-        sendSalaryNotification: function(tId, monthStr) {
-            const t = DB.teachers.find(i => i.id === tId);
-            const calc = this.calculateSalary(t, monthStr);
-            alert(`Đã gửi thông báo lương tháng ${monthStr} thành công đến giáo viên ${t.name} (SĐT: ${t.phone}) với mức thực nhận: ${calc.netSalary.toLocaleString('vi-VN')} VNĐ!`);
-        },
-
-        previewBranchExcel: function() {
-            const tbody = document.getElementById('m5-branchPreviewBody');
-            tbody.innerHTML = '';
-            
-            if (DB.branches.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; border: 1px solid #000; padding: 8px;">Không có dữ liệu chi nhánh</td></tr>`;
-            } else {
-                DB.branches.forEach((b, idx) => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${idx + 1}</td>
-                            <td style="border: 1px solid #000; padding: 6px;">${b.district || ''} - ${b.province || ''}</td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;"><b>${b.id}</b></td>
-                            <td style="border: 1px solid #000; padding: 6px;"><b>${b.name}</b></td>
-                            <td style="border: 1px solid #000; padding: 6px;">${b.addressNew || b.address || ''}</td>
-                            <td style="border: 1px solid #000; padding: 6px;">${b.rep || ''}</td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${b.phone || ''}</td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">${(b.classList || []).length}</td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: right;">${Number(b.fee || 0).toLocaleString('vi-VN')}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            document.getElementById('m5-previewTime').innerText = new Date().toLocaleDateString('vi-VN');
-            document.getElementById('m5-modalBranchPreview').classList.add('active');
-        },
-
-        downloadBranchExcelFromPreview: function() {
-            const wb = XLSX.utils.book_new();
-            const excelData = DB.branches.map((b, idx) => ({
-                "STT": idx + 1,
-                "Khu vực": `${b.district || ''} - ${b.province || ''}`,
-                "Mã chi nhánh": b.id,
-                "Tên chi nhánh": b.name,
-                "Địa chỉ": b.addressNew || b.address || '',
-                "Người đại diện": b.rep || '',
-                "Điện thoại": b.phone || '',
-                "Số lớp": (b.classList || []).length,
-                "Học phí": Number(b.fee || 0)
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(excelData);
-            if(!ws['!printOptions']) ws['!printOptions'] = {};
-            ws['!pageSetup'] = { fitToWidth: 1, fitToHeight: 0, orientation: "landscape" };
-
-            XLSX.utils.book_append_sheet(wb, ws, "Danh Sách Chi Nhánh");
-            XLSX.writeFile(wb, `Danh_Sach_Chi_Nhanh_${new Date().toISOString().slice(0,10)}.xlsx`);
-            CoreSystem.closeModal('m5-modalBranchPreview');
-        },
-
-        showBranchDetail: function(bId, monthStr) {
-            const branch = DB.branches.find(b => b.id === bId);
-            const slots = DB.timetable.filter(s => s.branchId === bId && s.date.startsWith(monthStr));
-
-            document.getElementById('m5-branchDetailTitle').innerText = `Chi Tiết Ca Dạy - ${branch ? branch.name : bId}`;
-            const tbody = document.getElementById('m5-branchDetailBody');
-            tbody.innerHTML = slots.length === 0 ? `<tr><td colspan="6" style="text-align:center;">Không có ca dạy nào</td></tr>` :
-            slots.map((s, idx) => {
-                const t = DB.teachers.find(i => i.id === s.teacherId);
-                return `<tr>
-                    <td>${idx + 1}</td>
-                    <td>${CoreSystem.formatDateVN(s.date)} (${s.startTime}-${s.endTime})</td>
-                    <td><b>${s.classRoom}</b></td>
-                    <td>${t ? t.name : 'Chưa có'}</td>
-                    <td>${s.attended ? '<span class="status-badge status-active">Đã điểm danh</span>' : '<span class="status-badge status-inactive">Chưa</span>'}</td>
-                    <td style="text-align:center;">${s.studentsCount || 0}</td>
-                </tr>`;
-            }).join('');
-            document.getElementById('m5-modalBranchDetail').classList.add('active');
-        },
-
-        showTeacherDetail: function(tId, monthStr) {
-            const teacher = DB.teachers.find(t => t.id === tId);
-            const slots = DB.timetable.filter(s => s.teacherId === tId && s.date.startsWith(monthStr));
-
-            document.getElementById('m5-teacherDetailTitle').innerText = `Chi Tiết Lịch Dạy - ${teacher ? teacher.name : tId}`;
-            const tbody = document.getElementById('m5-teacherDetailBody');
-            tbody.innerHTML = slots.length === 0 ? `<tr><td colspan="6" style="text-align:center;">Không có ca dạy nào</td></tr>` :
-            slots.map((s, idx) => {
-                const b = DB.branches.find(i => i.id === s.branchId);
-                return `<tr>
-                    <td>${idx + 1}</td>
-                    <td>${CoreSystem.formatDateVN(s.date)} (${s.startTime}-${s.endTime})</td>
-                    <td>${b ? b.name : s.branchId}</td>
-                    <td><b>${s.classRoom}</b></td>
-                    <td>${s.attended ? '<span class="status-badge status-active">Có</span>' : '<span class="status-badge status-inactive">Không</span>'}</td>
-                    <td style="text-align:center;">${s.studentsCount || 0}</td>
-                </tr>`;
-            }).join('');
-            document.getElementById('m5-modalTeacherDetail').classList.add('active');
-        },
-
-        exportAllExcel: function() {
-            const wb = XLSX.utils.book_new();
-            const monthStr = document.getElementById('m5-reportMonth').value;
-
-            const branchData = DB.branches.map(b => ({
-                "Mã CN": b.id, "Tên Chi Nhánh": b.name, "Đại Diện": b.rep, "SĐT": b.phone, "Học Phí": b.fee
-            }));
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(branchData), "Chi Nhánh");
-
-            const teacherData = DB.teachers.map(t => {
-                const calc = this.calculateSalary(t, monthStr);
-                return {
-                    "Mã GV": t.id, "Họ Tên": t.name, "SĐT": t.phone, "Hợp Đồng": t.type, "Lương Thực Nhận": calc.netSalary
-                };
-            });
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(teacherData), "Bảng Lương");
-
-            XLSX.writeFile(wb, `Bao_Cao_CRM_Thandong_${monthStr}.xlsx`);
-        },
-
-        exportSalaryExcel: function() {
-            this.exportAllExcel();
+            document.getElementById('m5-employeeSalaryPDFContent').innerHTML = html;
+            document.getElementById('m5-modalEmployeeSalaryPDF').classList.add('active');
         }
     };
-
-    /* ==========================================================================
-       MỤC 6: ĐỔI MẬT KHẨU
+   
+   /* ==========================================================================
+       MỤC 6: ĐỔI MẬT KHẨU TẤT CẢ TÀI KHOẢN TRONG HỆ THỐNG
        ========================================================================== */
     const Module6_UserPass = {
         openModal: function() {
             const select = document.getElementById('m6-passAccountSelect');
-            select.innerHTML = DB.teachers.map(t => `<option value="${t.id}">${t.name} (${t.email})</option>`).join('');
+            if(!select) return;
+
+            // Gom tất cả tài khoản vào danh sách chọn: Admin, Giáo viên, Nhân viên
+            let optionsHTML = `<option value="admin@thandong.com" data-type="admin">Quản trị viên (admin@thandong.com)</option>`;
+
+            // Thêm danh sách giáo viên
+            (DB.teachers || []).forEach(t => {
+                optionsHTML += `<option value="${t.email}" data-type="teacher" data-id="${t.id}">Giáo viên: ${t.name} (${t.email})</option>`;
+            });
+
+            // Thêm danh sách nhân viên
+            (DB.employees || []).forEach(emp => {
+                optionsHTML += `<option value="${emp.email}" data-type="employee" data-id="${emp.id}">Nhân viên: ${emp.name} (${emp.email})</option>`;
+            });
+
+            select.innerHTML = optionsHTML;
             this.autoFillOldPass();
             document.getElementById('m6-modalChangePass').classList.add('active');
         },
+
         autoFillOldPass: function() {
-            const tId = document.getElementById('m6-passAccountSelect').value;
-            const teacher = DB.teachers.find(t => t.id === tId);
-            if (teacher) {
-                document.getElementById('m6-passOld').value = teacher.pass || '123456';
+            const select = document.getElementById('m6-passAccountSelect');
+            if(!select || !select.selectedOptions.length) return;
+            
+            const selectedOpt = select.selectedOptions[0];
+            const type = selectedOpt.getAttribute('data-type');
+            const email = selectedOpt.value;
+            const oldPassInput = document.getElementById('m6-passOld');
+
+            if (type === 'admin') {
+                oldPassInput.value = 'Rich@2007'; // Mật khẩu mặc định của admin
+            } else if (type === 'teacher') {
+                const t = (DB.teachers || []).find(i => i.email === email);
+                oldPassInput.value = t ? (t.pass || '123456') : '';
+            } else if (type === 'employee') {
+                const emp = (DB.employees || []).find(i => i.email === email);
+                oldPassInput.value = emp ? (emp.pass || '123456') : '';
             }
         },
+
         save: function(e) {
             e.preventDefault();
-            const tId = document.getElementById('m6-passAccountSelect').value;
-            const newPass = document.getElementById('m6-passNew').value;
-            const confirmPass = document.getElementById('m6-passConfirm').value;
+            const select = document.getElementById('m6-passAccountSelect');
+            const selectedOpt = select.selectedOptions[0];
+            const type = selectedOpt.getAttribute('data-type');
+            const email = selectedOpt.value;
 
+            const newPass = document.getElementById('m6-passNew').value.trim();
+            const confirmPass = document.getElementById('m6-passConfirm').value.trim();
+
+            if (!newPass) return alert('Vui lòng nhập mật khẩu mới!');
             if (newPass !== confirmPass) return alert('Mật khẩu xác nhận không khớp!');
 
-            const teacher = DB.teachers.find(t => t.id === tId);
-            if (teacher) {
-                teacher.pass = newPass;
-                DB.save();
-                alert('Đổi mật khẩu thành công!');
+            if (type === 'admin') {
+                // Lưu ý: Mật khẩu Admin đang được hardcode trong index.html, 
+                // ở đây bạn có thể hiển thị thông báo đổi hoặc lưu tạm vào localStorage nếu muốn thay đổi
+                alert('Mật khẩu Quản trị viên (Admin) chỉ đổi trực tiếp trong code kiểm tra đăng nhập tại file index.html!');
                 CoreSystem.closeModal('m6-modalChangePass');
+                return;
+            } 
+            else if (type === 'teacher') {
+                const teacher = (DB.teachers || []).find(t => t.email === email);
+                if (teacher) {
+                    teacher.pass = newPass;
+                    DB.save();
+                    alert(`Đã đổi mật khẩu thành công cho giáo viên: ${teacher.name}!`);
+                    CoreSystem.closeModal('m6-modalChangePass');
+                }
+            } 
+            else if (type === 'employee') {
+                const employee = (DB.employees || []).find(emp => emp.email === email);
+                if (employee) {
+                    employee.pass = newPass;
+                    DB.save();
+                    alert(`Đã đổi mật khẩu thành công cho nhân viên: ${employee.name}!`);
+                    CoreSystem.closeModal('m6-modalChangePass');
+                }
             }
         }
     };
 
     // Khởi chạy ứng dụng khi DOM sẵn sàng
-    window.onload = function() {
+ /* ==========================================================================
+       MỤC 6: BÁO CÁO THU CHI & LỢI NHUẬN RÒNG
+       ========================================================================== */
+    const Module6_Finance = {
+        currentSubTab: 'thu',
+
+        switchTab: function(tab) {
+            this.currentSubTab = tab;
+            document.getElementById('f-btn-tab-thu').classList.toggle('active', tab === 'thu');
+            document.getElementById('f-btn-tab-chi').classList.toggle('active', tab === 'chi');
+            document.getElementById('f-table-thu-container').style.display = tab === 'thu' ? 'block' : 'none';
+            document.getElementById('f-table-chi-container').style.display = tab === 'chi' ? 'block' : 'none';
+            this.render();
+        },
+
+        render: function() {
+            const branchFilter = document.getElementById('f-filterBranch');
+            if(!branchFilter) return;
+            const curVal = branchFilter.value;
+            branchFilter.innerHTML = '<option value="">-- Tất cả chi nhánh --</option>' + DB.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            branchFilter.value = curVal;
+
+            const selectedBranch = branchFilter.value;
+            const selectedYear = document.getElementById('f-filterYear').value;
+            const selectedMonth = document.getElementById('f-filterMonth').value;
+
+            let filteredThu = (DB.financeThu || []).filter(item => {
+                const matchBranch = !selectedBranch || item.branchId === selectedBranch;
+                const matchYear = !selectedYear || (item.date && item.date.startsWith(selectedYear));
+                const matchMonth = !selectedMonth || (item.date && item.date.slice(5, 7) === selectedMonth);
+                return matchBranch && matchYear && matchMonth;
+            });
+
+            let filteredChi = (DB.financeChi || []).filter(item => {
+                const matchBranch = !selectedBranch || item.branchId === selectedBranch;
+                const matchYear = !selectedYear || (item.date && item.date.startsWith(selectedYear));
+                const matchMonth = !selectedMonth || (item.date && item.date.slice(5, 7) === selectedMonth);
+                return matchBranch && matchYear && matchMonth;
+            });
+
+            let totalThu = filteredThu.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+            let totalChi = filteredChi.reduce((sum, i) => sum + Number(i.amount || 0), 0);
+            let netProfit = totalThu - totalChi;
+            let profitMargin = totalThu > 0 ? (netProfit / totalThu) * 100 : 0;
+
+            document.getElementById('f-total-thu').innerText = totalThu.toLocaleString('vi-VN') + ' VNĐ';
+            document.getElementById('f-total-chi').innerText = totalChi.toLocaleString('vi-VN') + ' VNĐ';
+            document.getElementById('f-net-profit').innerText = netProfit.toLocaleString('vi-VN') + ' VNĐ';
+            document.getElementById('f-net-profit').style.color = netProfit >= 0 ? 'var(--primary-green)' : '#EF4444';
+            document.getElementById('f-profit-margin').innerText = profitMargin.toFixed(1) + '%';
+
+            const tbodyThu = document.getElementById('f-thu-table-body');
+            tbodyThu.innerHTML = filteredThu.length === 0 ? `<tr><td colspan="7" style="text-align:center; color:#9CA3AF;">Không có dữ liệu thu tiền</td></tr>` :
+            filteredThu.map((item, idx) => {
+                const b = DB.branches.find(i => i.id === item.branchId);
+                return `<tr>
+                    <td style="text-align:center;">${idx + 1}</td>
+                    <td><b>${item.id}</b></td>
+                    <td>${b ? b.name : item.branchId}</td>
+                    <td>${CoreSystem.formatDateVN(item.date)}</td>
+                    <td><b style="color:var(--primary-green);">${Number(item.amount).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td>${item.note || ''}</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn-danger" style="padding:3px 6px; font-size:11px;" onclick="Module6_Finance.deleteThu('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            const tbodyChi = document.getElementById('f-chi-table-body');
+            tbodyChi.innerHTML = filteredChi.length === 0 ? `<tr><td colspan="10" style="text-align:center; color:#9CA3AF;">Không có dữ liệu chi tiền</td></tr>` :
+            filteredChi.map((item, idx) => {
+                const b = DB.branches.find(i => i.id === item.branchId);
+                return `<tr>
+                    <td style="text-align:center;">${idx + 1}</td>
+                    <td><b>${item.id}</b></td>
+                    <td>${b ? b.name : item.branchId}</td>
+                    <td>${CoreSystem.formatDateVN(item.date)}</td>
+                    <td>${item.person || ''}</td>
+                    <td><span class="status-badge ${item.type==='Cố định'?'status-active':'status-inactive'}">${item.type}</span></td>
+                    <td><b>${item.subCategory}</b></td>
+                    <td><b style="color:#EF4444;">${Number(item.amount).toLocaleString('vi-VN')} VNĐ</b></td>
+                    <td>${item.note || ''}</td>
+                    <td style="text-align:center;">
+                        <button class="btn btn-danger" style="padding:3px 6px; font-size:11px;" onclick="Module6_Finance.deleteChi('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        },
+
+        openAddThuModal: function() {
+            document.getElementById('f-thuId').value = '';
+            document.getElementById('f-thuDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('f-thuAmount').value = '';
+            document.getElementById('f-thuNote').value = '';
+
+            const sel = document.getElementById('f-thuBranch');
+            sel.innerHTML = DB.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            document.getElementById('f-modalThu').classList.add('active');
+        },
+
+        saveThu: function(e) {
+            e.preventDefault();
+            const thuObj = {
+                id: 'THU_' + Date.now(),
+                branchId: document.getElementById('f-thuBranch').value,
+                date: document.getElementById('f-thuDate').value,
+                amount: parseFloat(document.getElementById('f-thuAmount').value) || 0,
+                note: document.getElementById('f-thuNote').value
+            };
+            if(!DB.financeThu) DB.financeThu = [];
+            DB.financeThu.push(thuObj);
+            DB.save();
+            CoreSystem.closeModal('f-modalThu');
+            this.render();
+        },
+
+        deleteThu: function(id) {
+            if(confirm('Bạn có chắc muốn xóa phiếu thu này?')) {
+                DB.financeThu = DB.financeThu.filter(i => i.id !== id);
+                DB.save();
+                this.render();
+            }
+        },
+
+        openAddChiModal: function() {
+            document.getElementById('f-chiId').value = '';
+            document.getElementById('f-chiDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('f-chiPerson').value = '';
+            document.getElementById('f-chiAmount').value = '';
+            document.getElementById('f-chiNote').value = '';
+            document.getElementById('f-newSubCategory').value = '';
+
+            const sel = document.getElementById('f-chiBranch');
+            sel.innerHTML = DB.branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            
+            document.getElementById('f-chiType').value = 'Cố định';
+            this.onChiTypeChange();
+            document.getElementById('f-modalChi').classList.add('active');
+        },
+
+        onChiTypeChange: function() {
+            const type = document.getElementById('f-chiType').value;
+            const subSel = document.getElementById('f-chiSubCategory');
+            const list = (DB.expenseCategories && DB.expenseCategories[type]) ? DB.expenseCategories[type] : [];
+            subSel.innerHTML = list.map(sub => `<option value="${sub}">${sub}</option>`).join('');
+        },
+
+        saveChi: function(e) {
+            e.preventDefault();
+            const type = document.getElementById('f-chiType').value;
+            let subCategory = document.getElementById('f-chiSubCategory').value;
+            const newSub = document.getElementById('f-newSubCategory').value.trim();
+
+            if (newSub) {
+                if (!DB.expenseCategories) DB.expenseCategories = {};
+                if (!DB.expenseCategories[type]) DB.expenseCategories[type] = [];
+                if (!DB.expenseCategories[type].includes(newSub)) {
+                    DB.expenseCategories[type].push(newSub);
+                }
+                subCategory = newSub;
+            }
+
+            const chiObj = {
+                id: 'CHI_' + Date.now(),
+                branchId: document.getElementById('f-chiBranch').value,
+                date: document.getElementById('f-chiDate').value,
+                person: document.getElementById('f-chiPerson').value,
+                amount: parseFloat(document.getElementById('f-chiAmount').value) || 0,
+                type: type,
+                subCategory: subCategory,
+                note: document.getElementById('f-chiNote').value
+            };
+
+            if(!DB.financeChi) DB.financeChi = [];
+            DB.financeChi.push(chiObj);
+            DB.save();
+            CoreSystem.closeModal('f-modalChi');
+            this.render();
+        },
+
+        deleteChi: function(id) {
+            if(confirm('Bạn có chắc muốn xóa phiếu chi này?')) {
+                DB.financeChi = DB.financeChi.filter(i => i.id !== id);
+                DB.save();
+                this.render();
+            }
+        },
+
+        openManageCategoriesModal: function() {
+            this.renderCategoriesTable();
+            document.getElementById('f-modalCategories').classList.add('active');
+        },
+
+        renderCategoriesTable: function() {
+            const tbody = document.getElementById('f-category-table-body');
+            tbody.innerHTML = '';
+            const categories = DB.expenseCategories || { 'Cố định': [], 'Phát sinh': [] };
+            for(let type in categories) {
+                categories[type].forEach((sub, idx) => {
+                    tbody.innerHTML += `<tr>
+                        <td><span class="status-badge ${type==='Cố định'?'status-active':'status-inactive'}">${type}</span></td>
+                        <td><b>${sub}</b></td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module6_Finance.deleteCategory('${type}', ${idx})">Xóa</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+        },
+
+        addCategory: function() {
+            const type = document.getElementById('f-catType').value;
+            const name = document.getElementById('f-catName').value.trim();
+            if(!name) return alert('Vui lòng nhập tên tiểu mục phí!');
+            
+            if(!DB.expenseCategories) DB.expenseCategories = {};
+            if(!DB.expenseCategories[type]) DB.expenseCategories[type] = [];
+            
+            if(DB.expenseCategories[type].includes(name)) return alert('Tiểu mục phí này đã tồn tại!');
+            
+            DB.expenseCategories[type].push(name);
+            DB.save();
+            document.getElementById('f-catName').value = '';
+            this.renderCategoriesTable();
+        },
+
+        deleteCategory: function(type, idx) {
+            if(confirm('Bạn có chắc chắn muốn xóa tiểu mục phí này?')) {
+                DB.expenseCategories[type].splice(idx, 1);
+                DB.save();
+                this.renderCategoriesTable();
+            }
+        }
+    };
+/* ==========================================================================
+       MỤC 3.2: QUẢN LÝ NHÂN VIÊN
+       ========================================================================== */
+    const Module3_2_Employee = {
+        tempDegrees: [],
+        tempTools: [],
+
+        render: function() {
+            const tbody = document.getElementById('m3-2-employee-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            const list = DB.employees || [];
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#9CA3AF;">Chưa có dữ liệu nhân viên</td></tr>`;
+                return;
+            }
+
+            list.forEach((emp, idx) => {
+                let branchNames = (emp.branchIds || []).map(bId => {
+                    const b = DB.branches.find(item => item.id === bId);
+                    return b ? b.name : bId;
+                }).join(', ');
+
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td><b>${emp.id}</b></td>
+                    <td><b>${emp.name}</b><br><small>${emp.gender} - Sinh: ${CoreSystem.formatDateVN(emp.dob)}</small></td>
+                    <td class="info-cell">
+                        <div><b>SĐT:</b> ${emp.phone}</div>
+                        <div><b>CCCD:</b> ${emp.cccd}</div>
+                        <div><b>Địa chỉ:</b> ${emp.addressNew}</div>
+                    </td>
+                    <td>
+                        <div><b>Email:</b> ${emp.email}</div>
+                        <div><b>Pass:</b> ${emp.pass}</div>
+                        <span class="status-badge ${emp.status==='Đang làm việc'?'status-active':'status-inactive'}">${emp.status}</span>
+                    </td>
+                    <td>
+                        <div><b>HĐ:</b> ${emp.contractType}</div>
+                        <div><b>Lương ĐM:</b> ${Number(emp.baseSalary||0).toLocaleString('vi-VN')} VNĐ</div>
+                        <div><small style="color:green;">Phụ cấp: +${Number(emp.allowances||0).toLocaleString('vi-VN')}</small></div>
+                        <div><small style="color:red;">Khấu trừ: -${Number(emp.deductions||0).toLocaleString('vi-VN')}</small></div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-active">${(emp.degrees||[]).length} Bằng cấp</span><br>
+                        <span class="status-badge status-active" style="background:#E0F2FE; color:#0369A1; margin-top:4px;">${(emp.tools||[]).length} Đồ dùng</span>
+                    </td>
+                    <td><b>${branchNames || 'Chưa phân công'}</b></td>
+                    <td>
+                        <button class="btn btn-secondary" style="padding:4px 8px;" onclick="Module3_2_Employee.edit('${emp.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-danger" style="padding:4px 8px;" onclick="Module3_2_Employee.delete('${emp.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+        },
+
+        generateCode: function() {
+            const list = DB.employees || [];
+            if (list.length === 0) return 'NV001';
+            const maxId = list.reduce((max, item) => {
+                const num = parseInt(String(item.id).replace('NV', ''), 10) || 0;
+                return num > max ? num : max;
+            }, 0);
+            return 'NV' + String(maxId + 1).padStart(3, '0');
+        },
+
+        renderBranchMultiselect: function(selectedBranchIds = []) {
+            const container = document.getElementById('m3-2-empBranchContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            if (DB.branches.length === 0) {
+                container.innerHTML = '<div style="font-size:12px; color:#9CA3AF;">Chưa có chi nhánh nào</div>';
+                return;
+            }
+            DB.branches.forEach(b => {
+                const isChecked = selectedBranchIds.includes(b.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <label class="multiselect-item">
+                        <input type="checkbox" class="m3-2-branch-cb" value="${b.id}" ${isChecked} onchange="Module3_2_Employee.updateSelectAllState()">
+                        <span>${b.name} (${b.district})</span>
+                    </label>
+                `;
+            });
+            this.updateSelectAllState();
+        },
+
+        toggleSelectAllBranches: function(masterCb) {
+            document.querySelectorAll('.m3-2-branch-cb').forEach(cb => { cb.checked = masterCb.checked; });
+        },
+
+        updateSelectAllState: function() {
+            const allCbs = document.querySelectorAll('.m3-2-branch-cb');
+            if (allCbs.length === 0) return;
+            const checkedCbs = document.querySelectorAll('.m3-2-branch-cb:checked');
+            const selectAllCb = document.getElementById('m3-2-empSelectAllBranches');
+            if (selectAllCb) selectAllCb.checked = (allCbs.length === checkedCbs.length);
+        },
+
+        openAddModal: function() {
+            document.getElementById('m3-2-empId').value = '';
+            document.getElementById('m3-2-empCode').value = this.generateCode();
+            document.getElementById('m3-2-empName').value = '';
+            document.getElementById('m3-2-empGender').value = 'Nam';
+            document.getElementById('m3-2-empDob').value = '';
+            document.getElementById('m3-2-empCccd').value = '';
+            document.getElementById('m3-2-empPhone').value = '';
+            document.getElementById('m3-2-empAddressOld').value = '';
+            document.getElementById('m3-2-empAddressNew').value = '';
+            
+            document.getElementById('m3-2-empEmail').value = 'nhanvien@thandong.edu.vn';
+            document.getElementById('m3-2-empPass').value = '123456';
+            document.getElementById('m3-2-empContractType').value = '1 năm';
+            document.getElementById('m3-2-empBaseSalary').value = '';
+            document.getElementById('m3-2-empAllowances').value = '0';
+            document.getElementById('m3-2-empDeductions').value = '0';
+            document.getElementById('m3-2-empWorkDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('m3-2-empQuitDate').value = '';
+            document.getElementById('m3-2-empStatus').value = 'Đang làm việc';
+
+            // Gợi ý tự sinh email khi nhập tên
+            document.getElementById('m3-2-empName').oninput = function() {
+                const val = this.value.trim().toLowerCase();
+                // Chuyển đổi tiếng Việt không dấu đơn giản
+                const slug = val.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+                if(slug) document.getElementById('m3-2-empEmail').value = slug + '@thandong.edu.vn';
+            };
+
+            this.renderBranchMultiselect([]);
+            this.tempDegrees = [];
+            this.renderDegreeTable();
+            this.tempTools = [];
+            this.renderToolTable();
+
+            document.getElementById('m3-2-modalTitle').innerText = 'Thêm Nhân Viên Mới';
+            document.getElementById('m3-2-modalEmployee').classList.add('active');
+        },
+
+        onQuitDateChange: function() {
+            const quitDate = document.getElementById('m3-2-empQuitDate').value;
+            const statusInput = document.getElementById('m3-2-empStatus');
+            if (quitDate) {
+                statusInput.value = 'Đã nghỉ việc';
+                statusInput.style.color = '#EF4444';
+            } else {
+                statusInput.value = 'Đang làm việc';
+                statusInput.style.color = 'var(--primary-green)';
+            }
+        },
+
+        addDegreeToList: function() {
+            const name = document.getElementById('m3-2-degName').value.trim();
+            const issuer = document.getElementById('m3-2-degIssuer').value.trim();
+            const year = document.getElementById('m3-2-degYear').value.trim();
+            if (!name) return alert('Vui lòng nhập tên bằng cấp!');
+            this.tempDegrees.push({ name, issuer: issuer || 'N/A', year: year || 'N/A' });
+            document.getElementById('m3-2-degName').value = '';
+            this.renderDegreeTable();
+        },
+        removeDegreeFromList: function(idx) { this.tempDegrees.splice(idx, 1); this.renderDegreeTable(); },
+        renderDegreeTable: function() {
+            const tbody = document.getElementById('m3-2-degree-list-body');
+            tbody.innerHTML = this.tempDegrees.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#9CA3AF;">Chưa có bằng cấp</td></tr>` :
+            this.tempDegrees.map((deg, idx) => `<tr><td>${idx+1}</td><td><b>${deg.name}</b></td><td>${deg.issuer}</td><td>${deg.year}</td><td><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module3_2_Employee.removeDegreeFromList(${idx})">Xóa</button></td></tr>`).join('');
+        },
+
+        addToolToList: function() {
+            const name = document.getElementById('m3-2-toolName').value.trim();
+            const qty = parseInt(document.getElementById('m3-2-toolQty').value) || 1;
+            const receiveDate = document.getElementById('m3-2-toolReceiveDate').value;
+            const returnDate = document.getElementById('m3-2-toolReturnDate').value;
+            if (!name) return alert('Vui lòng nhập tên đồ dùng!');
+            this.tempTools.push({ name, qty, receiveDate, returnDate });
+            document.getElementById('m3-2-toolName').value = '';
+            this.renderToolTable();
+        },
+        removeToolFromList: function(idx) { this.tempTools.splice(idx, 1); this.renderToolTable(); },
+        renderToolTable: function() {
+            const tbody = document.getElementById('m3-2-tool-list-body');
+            tbody.innerHTML = this.tempTools.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:#9CA3AF;">Chưa có đồ dùng</td></tr>` :
+            this.tempTools.map((tool, idx) => `<tr><td>${idx+1}</td><td><b>${tool.name}</b></td><td>${tool.qty}</td><td>${CoreSystem.formatDateVN(tool.receiveDate)||'N/A'}</td><td>${CoreSystem.formatDateVN(tool.returnDate)||'N/A'}</td><td><button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:11px;" onclick="Module3_2_Employee.removeToolFromList(${idx})">Xóa</button></td></tr>`).join('');
+        },
+
+        save: function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('m3-2-empId').value;
+            const code = document.getElementById('m3-2-empCode').value;
+            const selectedBranchIds = Array.from(document.querySelectorAll('.m3-2-branch-cb:checked')).map(cb => cb.value);
+            
+            if (selectedBranchIds.length === 0) return alert('Vui lòng chọn ít nhất 01 chi nhánh làm việc!');
+
+            const quitDate = document.getElementById('m3-2-empQuitDate').value;
+            const status = quitDate ? 'Đã nghỉ việc' : 'Đang làm việc';
+
+            const empObj = {
+                id: editId || code,
+                name: document.getElementById('m3-2-empName').value,
+                gender: document.getElementById('m3-2-empGender').value,
+                dob: document.getElementById('m3-2-empDob').value,
+                cccd: document.getElementById('m3-2-empCccd').value,
+                phone: document.getElementById('m3-2-empPhone').value,
+                addressOld: document.getElementById('m3-2-empAddressOld').value,
+                addressNew: document.getElementById('m3-2-empAddressNew').value,
+                email: document.getElementById('m3-2-empEmail').value,
+                pass: document.getElementById('m3-2-empPass').value,
+                contractType: document.getElementById('m3-2-empContractType').value,
+                baseSalary: parseFloat(document.getElementById('m3-2-empBaseSalary').value) || 0,
+                allowances: parseFloat(document.getElementById('m3-2-empAllowances').value) || 0,
+                deductions: parseFloat(document.getElementById('m3-2-empDeductions').value) || 0,
+                workDate: document.getElementById('m3-2-empWorkDate').value,
+                quitDate: quitDate,
+                status: status,
+                branchIds: selectedBranchIds,
+                degrees: [...this.tempDegrees],
+                tools: [...this.tempTools]
+            };
+
+            if(!DB.employees) DB.employees = [];
+            if(editId) {
+                const idx = DB.employees.findIndex(i => i.id === editId);
+                if(idx >= 0) DB.employees[idx] = empObj;
+            } else {
+                DB.employees.push(empObj);
+            }
+            DB.save();
+            CoreSystem.closeModal('m3-2-modalEmployee');
+	this.render();
+        },
+
+        edit: function(id) {
+            const emp = (DB.employees || []).find(i => i.id === id);
+            if(!emp) return;
+            document.getElementById('m3-2-empId').value = emp.id;
+            document.getElementById('m3-2-empCode').value = emp.id;
+            document.getElementById('m3-2-empName').value = emp.name;
+            document.getElementById('m3-2-empGender').value = emp.gender || 'Nam';
+            document.getElementById('m3-2-empDob').value = emp.dob || '';
+            document.getElementById('m3-2-empCccd').value = emp.cccd || '';
+            document.getElementById('m3-2-empPhone').value = emp.phone || '';
+            document.getElementById('m3-2-empAddressOld').value = emp.addressOld || '';
+            document.getElementById('m3-2-empAddressNew').value = emp.addressNew || '';
+            document.getElementById('m3-2-empEmail').value = emp.email || '';
+            document.getElementById('m3-2-empPass').value = emp.pass || '123456';
+            document.getElementById('m3-2-empContractType').value = emp.contractType || '1 năm';
+            document.getElementById('m3-2-empBaseSalary').value = emp.baseSalary || 0;
+            document.getElementById('m3-2-empAllowances').value = emp.allowances || 0;
+            document.getElementById('m3-2-empDeductions').value = emp.deductions || 0;
+            document.getElementById('m3-2-empWorkDate').value = emp.workDate || '';
+            document.getElementById('m3-2-empQuitDate').value = emp.quitDate || '';
+            
+            const statusInput = document.getElementById('m3-2-empStatus');
+            statusInput.value = emp.status || 'Đang làm việc';
+            statusInput.style.color = emp.status === 'Đã nghỉ việc' ? '#EF4444' : 'var(--primary-green)';
+
+            this.renderBranchMultiselect(emp.branchIds || []);
+            this.tempDegrees = emp.degrees ? [...emp.degrees] : [];
+            this.renderDegreeTable();
+            this.tempTools = emp.tools ? [...emp.tools] : [];
+            this.renderToolTable();
+
+            document.getElementById('m3-2-modalTitle').innerText = 'Chỉnh Sửa Nhân Viên';
+            document.getElementById('m3-2-modalEmployee').classList.add('active');
+        },
+
+        delete: function(id) {
+            if(confirm(`Bạn có chắc muốn xóa nhân viên mã ${id}?`)) {
+                DB.employees = DB.employees.filter(i => i.id !== id);
+                DB.save();
+            }
+        }
+    };
+   window.onload = function() {
         CoreSystem.init();
     };
 </script>
+<!-- MODAL THÊM THU TIỀN -->
+<div class="modal-overlay" id="f-modalThu">
+    <div class="modal-box" style="max-width: 500px;">
+        <div class="modal-header">
+            <div class="modal-title">Thêm Khoản Thu Tiền</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('f-modalThu')"></i>
+        </div>
+        <form onsubmit="Module6_Finance.saveThu(event)">
+            <input type="hidden" id="f-thuId">
+            <div class="form-group"><label>Chọn Chi Nhánh (*)</label><select id="f-thuBranch" class="form-control" required></select></div>
+            <div class="form-group"><label>Ngày Nộp (*)</label><input type="date" id="f-thuDate" class="form-control" required></div>
+            <div class="form-group"><label>Số Tiền Thu (VNĐ) (*)</label><input type="number" id="f-thuAmount" class="form-control" min="0" required placeholder="VD: 5000000"></div>
+            <div class="form-group"><label>Ghi Chú</label><textarea id="f-thuNote" class="form-control" rows="3" placeholder="Nhập ghi chú khoản thu..."></textarea></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('f-modalThu')">Hủy</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Lưu Thu Tiền</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL THÊM CHI TIỀN -->
+<div class="modal-overlay" id="f-modalChi">
+    <div class="modal-box" style="max-width: 600px;">
+        <div class="modal-header">
+            <div class="modal-title">Thêm Khoản Chi Tiền</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('f-modalChi')"></i>
+        </div>
+        <form onsubmit="Module6_Finance.saveChi(event)">
+            <input type="hidden" id="f-chiId">
+            <div class="form-grid">
+                <div class="form-group"><label>Chọn Chi Nhánh (*)</label><select id="f-chiBranch" class="form-control" required></select></div>
+                <div class="form-group"><label>Ngày Chi (*)</label><input type="date" id="f-chiDate" class="form-control" required></div>
+                <div class="form-group"><label>Người Chi (*)</label><input type="text" id="f-chiPerson" class="form-control" required placeholder="Họ tên người chi"></div>
+                <div class="form-group"><label>Số Tiền Chi (VNĐ) (*)</label><input type="number" id="f-chiAmount" class="form-control" min="0" required placeholder="VD: 1200000"></div>
+                <div class="form-group"><label>Loại Chi Phí (*)</label><select id="f-chiType" class="form-control" onchange="Module6_Finance.onChiTypeChange()" required><option value="Cố định">Chi phí cố định</option><option value="Phát sinh">Chi phí phát sinh</option></select></div>
+                <div class="form-group"><label>Tiểu Mục Phí (*)</label><select id="f-chiSubCategory" class="form-control" required></select></div>
+                <div class="form-group full-width"><label>Hoặc Thêm Nhanh Tiểu Mục Phí Mới (Tự động đồng bộ)</label><input type="text" id="f-newSubCategory" class="form-control" placeholder="Nhập tên tiểu mục mới nếu chưa có trong danh sách..."></div>
+                <div class="form-group full-width"><label>Ghi Chú</label><textarea id="f-chiNote" class="form-control" rows="2" placeholder="Nhập nội dung chi..."></textarea></div>
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn btn-secondary" onclick="CoreSystem.closeModal('f-modalChi')">Hủy</button>
+                <button type="submit" class="btn btn-danger"><i class="fa-solid fa-floppy-disk"></i> Lưu Chi Tiền</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL CẤU HÌNH TIỂU MỤC PHÍ -->
+<div class="modal-overlay" id="f-modalCategories">
+    <div class="modal-box" style="max-width: 600px;">
+        <div class="modal-header">
+            <div class="modal-title">Quản Lý Loại & Tiểu Mục Phí</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="CoreSystem.closeModal('f-modalCategories')"></i>
+        </div>
+        <div style="margin-bottom: 15px; background: #FFF5EE; padding: 12px; border-radius: 10px;">
+            <div style="font-weight: 700; color: var(--primary-orange); margin-bottom: 8px;">Thêm Tiểu Mục Phí Mới</div>
+            <div style="display: flex; gap: 10px;">
+                <select id="f-catType" class="form-control" style="width: 160px;"><option value="Cố định">Chi phí cố định</option><option value="Phát sinh">Chi phí phát sinh</option></select>
+                <input type="text" id="f-catName" class="form-control" placeholder="Tên tiểu mục phí (VD: Tiền điện, Mua văn phòng phẩm...)" style="flex:1;">
+                <button type="button" class="btn btn-green" onclick="Module6_Finance.addCategory()"><i class="fa-solid fa-plus"></i> Thêm</button>
+            </div>
+        </div>
+        <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+            <table>
+                <thead><tr><th>Loại Chi Phí</th><th>Tên Tiểu Mục Phí</th><th style="width:80px; text-align:center;">Thao Tác</th></tr></thead>
+                <tbody id="f-category-table-body"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('f-modalCategories')">Đóng</button>
+        </div>
+    </div>
+</div>
+<!-- MODAL XEM TRƯỚC PDF BÁO CÁO LƯƠNG NHÂN VIÊN -->
+<div class="modal-overlay" id="m5-modalEmployeeSalaryPDF">
+    <div class="modal-box" style="max-width: 900px; background: #fff; border: 3px solid #FF6B00;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); color: white;">
+            <div class="modal-title" style="color: white;"><i class="fa-solid fa-file-pdf"></i> Xem Trước Phiếu Lương Nhân Viên</div>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; color: white;" onclick="CoreSystem.closeModal('m5-modalEmployeeSalaryPDF')"></i>
+        </div>
+        <div id="m5-employeeSalaryPDFContent" style="padding: 25px; font-family: 'Times New Roman', Times, serif; color: #000; background: #fff;">
+            <!-- Render bằng JS -->
+        </div>
+        <div style="margin-top: 20px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; border-top: 2px solid #FFF5EE; padding: 15px; background: #FAFAFA;">
+            <button class="btn btn-secondary" onclick="CoreSystem.closeModal('m5-modalEmployeeSalaryPDF')">Đóng</button>
+            <button class="btn btn-green" onclick="window.print()"><i class="fa-solid fa-print"></i> In / Tải PDF Chính Thức</button>
+        </div>
+    </div>
+</div>
 <!-- MODAL XEM TRƯỚC BÁO CÁO CHI NHÁNH TRƯỚC KHI TẢI -->
 <div class="modal-overlay" id="m5-modalBranchPreview">
     <div class="modal-box" style="max-width: 1100px; background: #fff; border: 3px solid #FF6B00;">
@@ -2357,5 +3151,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>
