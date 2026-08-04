@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Thần Đồng - Đăng Nhập Hệ Thống</title>
+    <title>CRM SCHOOLING Hệ thống quản lý giáo dục mầm non chất lượng cao - Đăng Nhập</title>
     <!-- Font & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-   <!-- Firebase Config -->
     <script>
       const firebaseConfig = {
         apiKey: "AIzaSyDhmbwtlR-ETCJMaAwEl2jf8spdQo3ONL0",
@@ -22,7 +20,6 @@
         messagingSenderId: "447595255615",
         appId: "1:447595255615:web:4114b698ccd571d6dc658a"
       };
-
       firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
     </script>
@@ -31,127 +28,309 @@
             --primary-orange: #FF6B00;
             --primary-green: #10B981;
             --dark-orange: #E05D00;
+            --light-orange-bg: #FFF5EE;
             --white: #FFFFFF;
             --gray-100: #F3F4F6;
-            --gray-200: #E5E7EB;
             --gray-700: #374151;
             --gray-800: #1F2937;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: linear-gradient(135deg, #FF7A00 0%, #FF5500 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--gray-800); padding: 15px; }
+        body { background: linear-gradient(135deg, #FF7A00 0%, #FF5500 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: white; padding: 35px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 100%; max-width: 480px; text-align: center; }
+        .brand-title { font-size: 22px; font-weight: 800; color: var(--primary-orange); margin-bottom: 5px; }
+        .brand-subtitle { font-size: 11px; color: var(--primary-green); font-weight: 700; margin-bottom: 20px; letter-spacing: 0.5px; }
         
-        .login-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); width: 100%; max-width: 420px; border-radius: 24px; padding: 35px 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 2px solid var(--primary-orange); }
-        .brand-header { text-align: center; margin-bottom: 25px; }
-        .brand-title { font-size: 26px; font-weight: 800; color: var(--primary-orange); letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .brand-subtitle { font-size: 13px; color: var(--primary-green); font-weight: 700; margin-top: 4px; }
-        
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .form-group label { font-size: 14px; font-weight: 700; color: var(--gray-700); }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i { position: absolute; left: 14px; color: #9CA3AF; font-size: 16px; }
-        .form-control { width: 100%; padding: 12px 14px 12px 42px; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s ease; }
-        .form-control:focus { border-color: var(--primary-orange); box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15); }
-        
-        .btn-login { width: 100%; padding: 14px; background: linear-gradient(90deg, var(--primary-orange) 0%, #FF8800 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3); margin-top: 10px; }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255, 107, 0, 0.4); }
-        .error-msg { background: #FEE2E2; color: #991B1B; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 15px; display: none; }
+        .quote-box { background: var(--light-orange-bg); border-left: 4px solid var(--primary-orange); padding: 10px 15px; border-radius: 8px; font-style: italic; font-size: 13px; color: #C2410C; margin-bottom: 20px; text-align: left; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+        .quote-box i { margin-top: 3px; color: var(--primary-orange); flex-shrink: 0; }
+
+        .login-type-switch { display: flex; gap: 10px; margin-bottom: 20px; background: var(--gray-100); padding: 5px; border-radius: 12px; }
+        .type-btn { flex: 1; padding: 10px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--gray-700); cursor: pointer; border-radius: 8px; transition: all 0.3s; }
+        .type-btn.active { background: white; color: var(--primary-orange); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; }
+        .input-icon-wrap { position: relative; }
+        .input-icon-wrap i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; }
+        .form-control { width: 100%; padding: 12px 16px 12px 45px; border: 2px solid var(--gray-100); border-radius: 12px; font-size: 14px; outline: none; transition: all 0.3s; background: #fff; }
+        .form-control:focus { border-color: var(--primary-orange); box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1); }
+        select.form-control { padding-left: 45px; cursor: pointer; }
+
+        .btn-submit { width: 100%; background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3); margin-top: 10px; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4); }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="login-card">
-    <div class="brand-header">
-        <div class="brand-title"><i class="fa-solid fa-graduation-cap"></i> THẦN ĐỒNG SIÊU NHÍ </div>
-        <div class="brand-subtitle"> PORTAL SCHOOLING SYSTEM </div>
+    <div class="brand-title">CRM SCHOOLING</div>
+    <div class="brand-subtitle">HỆ THỐNG QUẢN LÝ GIÁO DỤC MẦM NON CHẤT LƯỢNG CAO</div>
+
+    <div class="quote-box">
+        <i class="fa-solid fa-lightbulb"></i>
+        <span id="quoteText">Đang tải câu nói truyền cảm hứng...</span>
     </div>
 
-    <div class="error-msg" id="login-error">Tài khoản hoặc mật khẩu không chính xác!</div>
+    <div class="login-type-switch">
+        <button type="button" class="type-btn active" id="btnNoiBo" onclick="switchLoginType('noibo')"><i class="fa-solid fa-user-shield"></i> Nội bộ Thần Đồng</button>
+        <button type="button" class="type-btn" id="btnTruongHoc" onclick="switchLoginType('truonghoc')"><i class="fa-solid fa-school"></i> Đối tác Trường học</button>
+    </div>
 
-    <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-            <label>Email Đăng Nhập</label>
-            <div class="input-wrapper">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="email" id="login-email" class="form-control" placeholder="nhapemail@thandong.com" required>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        
+        <!-- PHẦN 1: ĐĂNG NHẬP NỘI BỘ (Admin, Giáo viên, Nhân viên) -->
+        <div id="sectionNoiBo">
+            <div class="form-group">
+                <label class="form-label">Email nội bộ</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="noiBoEmail" class="form-control" placeholder="admin@thandong.com, giaovien@...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mật khẩu</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="noiBoPassword" class="form-control" placeholder="Nhập mật khẩu nội bộ...">
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Mật Khẩu</label>
-            <div class="input-wrapper">
-                <i class="fa-solid fa-lock"></i>
-                <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        <!-- PHẦN 2: ĐĂNG NHẬP ĐỐI TÁC TRƯỜNG HỌC -->
+        <div id="sectionTruongHoc" class="hidden">
+            <div class="form-group">
+                <label class="form-label">Tỉnh / Thành phố</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <select id="selectTinh" class="form-control" onchange="updateKhuVuc()">
+                        <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Khu vực / Quận Huyện</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <select id="selectKhuVuc" class="form-control" onchange="updateChiNhanh()">
+                        <option value="">-- Chọn Khu vực --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Chi nhánh trường học</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-school-flag"></i>
+                    <select id="selectChiNhanh" class="form-control" onchange="autoFillEmail()">
+                        <option value="">-- Chọn Chi nhánh --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email chi nhánh (Tự động điền theo mã)</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+                    <input type="email" id="schoolAutoEmail" class="form-control" readonly style="background: var(--gray-100); color: var(--gray-700);">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mật khẩu chi nhánh</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="schoolPassword" class="form-control" value="123456" placeholder="Mật khẩu mặc định 123456...">
+                </div>
             </div>
         </div>
 
-        <button type="submit" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> ĐĂNG NHẬP</button>
+        <button type="submit" class="btn-submit"><i class="fa-solid fa-right-to-bracket"></i> ĐĂNG NHẬP HỆ THỐNG</button>
     </form>
 </div>
 
 <script>
-    function handleLogin(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value.trim();
-        const pass = document.getElementById('login-password').value.trim();
-        const errorDiv = document.getElementById('login-error');
-        errorDiv.style.display = 'none';
+    const educationalQuotes50 = [
+        "1. Giáo dục không phải là đổ đầy một cái bình, mà là thắp sáng một ngọn lửa.",
+        "2. Trẻ em hôm nay, thế giới ngày mai. Hãy dành những điều tốt đẹp nhất cho các em.",
+        "3. Sự kiên nhẫn và tình yêu thương là chìa khóa mở cửa trái tim trẻ thơ.",
+        "4. Mỗi ngày đến trường là một ngày vui, mỗi giờ học là một niềm hạnh phúc.",
+        "5. Ươm mầm tri thức, chắp cánh ước mơ cho thế hệ trẻ thơ Việt Nam."
+    ];
 
-        // 1. Kiểm tra tài khoản Quản trị viên (Admin hệ thống)
-        if (email === 'admin@thandong.com' && pass === 'Rich@2007') {
-            localStorage.setItem('user_role', 'admin');
-            localStorage.setItem('admin_email', email);
-            window.location.href = 'dashboardadmin.html';
-            return;
-        }
+    let currentMode = 'noibo';
+    let globalBranches = [];
+    let globalTeachers = [];
+    let globalEmployees = [];
 
-        // 2. Kiểm tra danh sách Giáo viên và Nhân viên trên Firebase
-        database.ref('/').once('value', (snapshot) => {
-            const rootData = snapshot.val() || {};
-            
-            // Lấy dữ liệu giáo viên
-            const teachersData = rootData.teachers || [];
-            const teachers = Array.isArray(teachersData) ? teachersData.filter(Boolean) : Object.values(teachersData);
-            const foundTeacher = teachers.find(t => t.email === email && t.pass === pass);
+    window.onload = function() {
+        const randomIndex = Math.floor(Math.random() * educationalQuotes50.length);
+        document.getElementById('quoteText').innerText = educationalQuotes50[randomIndex];
 
-            if (foundTeacher) {
-                localStorage.setItem('user_role', 'teacher');
-                localStorage.setItem('teacher_email', foundTeacher.email);
-                window.location.href = 'teacherlogin.html';
-                return;
-            }
-
-            // Lấy dữ liệu nhân viên
-            const employeesData = rootData.employees || [];
-            const employees = Array.isArray(employeesData) ? employeesData.filter(Boolean) : Object.values(employeesData);
-            const foundEmployee = employees.find(emp => emp.email === email && emp.pass === pass);
-
-            if (foundEmployee) {
-                // Kiểm tra trạng thái nghỉ việc (chặn đăng nhập nếu đã nghỉ việc)
-                if (foundEmployee.status === 'Đã nghỉ việc') {
-                    errorDiv.innerText = 'Tài khoản này đã bị khóa do nhân viên đã nghỉ việc!';
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-
-                localStorage.setItem('user_role', 'employee');
-                localStorage.setItem('currentEmployee', JSON.stringify(foundEmployee));
-                window.location.href = 'nhanvien.html';
-                return;
-            }
-
-            // Nếu không khớp với bất kỳ tài khoản nào
-            errorDiv.innerText = 'Tài khoản hoặc mật khẩu không chính xác!';
-            errorDiv.style.display = 'block';
-
-        }).catch((err) => {
-            console.error(err);
-            errorDiv.innerText = 'Lỗi kết nối cơ sở dữ liệu Firebase!';
-            errorDiv.style.display = 'block';
+        database.ref('branches').on('value', (snapshot) => {
+            const val = snapshot.val();
+            globalBranches = val ? (Array.isArray(val) ? val.filter(Boolean) : Object.values(val)) : [];
+            initSchoolDropdowns();
         });
+
+        database.ref('teachers').on('value', (snapshot) => {
+            const val = snapshot.val();
+            globalTeachers = val ? (Array.isArray(val) ? val.filter(Boolean) : Object.values(val)) : [];
+        });
+
+        database.ref('employees').on('value', (snapshot) => {
+            const val = snapshot.val();
+            globalEmployees = val ? (Array.isArray(val) ? val.filter(Boolean) : Object.values(val)) : [];
+        });
+    };
+
+    function switchLoginType(type) {
+        currentMode = type;
+        const btnNoiBo = document.getElementById('btnNoiBo');
+        const btnTruongHoc = document.getElementById('btnTruongHoc');
+        const sectionNoiBo = document.getElementById('sectionNoiBo');
+        const sectionTruongHoc = document.getElementById('sectionTruongHoc');
+
+        if(type === 'noibo') {
+            btnNoiBo.classList.add('active');
+            btnTruongHoc.classList.remove('active');
+            sectionNoiBo.classList.remove('hidden');
+            sectionTruongHoc.classList.add('hidden');
+        } else {
+            btnTruongHoc.classList.add('active');
+            btnNoiBo.classList.remove('active');
+            sectionTruongHoc.classList.remove('hidden');
+            sectionNoiBo.classList.add('hidden');
+        }
+    }
+
+    function initSchoolDropdowns() {
+        const tinhSelect = document.getElementById('selectTinh');
+        const provinces = [...new Set(globalBranches.map(b => b.province || 'Đắk Lắk'))];
+        tinhSelect.innerHTML = '<option value="">-- Chọn Tỉnh / Thành phố --</option>' + provinces.map(p => `<option value="${p}">${p}</option>`).join('');
+        updateKhuVuc();
+    }
+
+    function updateKhuVuc() {
+        const tinhVal = document.getElementById('selectTinh').value;
+        const kvSelect = document.getElementById('selectKhuVuc');
+        const cnSelect = document.getElementById('selectChiNhanh');
+        
+        kvSelect.innerHTML = '<option value="">-- Chọn Khu vực --</option>';
+        cnSelect.innerHTML = '<option value="">-- Chọn Chi nhánh --</option>';
+        document.getElementById('schoolAutoEmail').value = '';
+
+        if(tinhVal) {
+            const districts = [...new Set(globalBranches.filter(b => (b.province || 'Đắk Lắk') === tinhVal).map(b => b.district))];
+            kvSelect.innerHTML = '<option value="">-- Chọn Khu vực --</option>' + districts.map(d => `<option value="${d}">${d}</option>`).join('');
+        }
+    }
+
+    function updateChiNhanh() {
+        const tinhVal = document.getElementById('selectTinh').value;
+        const kvVal = document.getElementById('selectKhuVuc').value;
+        const cnSelect = document.getElementById('selectChiNhanh');
+        
+        cnSelect.innerHTML = '<option value="">-- Chọn Chi nhánh --</option>';
+        document.getElementById('schoolAutoEmail').value = '';
+
+        if(tinhVal && kvVal) {
+            const schools = globalBranches.filter(b => (b.province || 'Đắk Lắk') === tinhVal && b.district === kvVal);
+            cnSelect.innerHTML = '<option value="">-- Chọn Chi nhánh --</option>' + schools.map(s => {
+                const branchCode = s.code || s.id || 'CN001';
+                const email = branchCode.toLowerCase() + '@thandong.com';
+                return `<option value="${email}" data-id="${s.id}">${s.name} (${branchCode})</option>`;
+            }).join('');
+        }
+    }
+
+    function autoFillEmail() {
+        const cnSelect = document.getElementById('selectChiNhanh');
+        document.getElementById('schoolAutoEmail').value = cnSelect.value;
+    }
+
+    function handleLogin(event) {
+        event.preventDefault();
+        
+        if(currentMode === 'noibo') {
+            const email = document.getElementById('noiBoEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('noiBoPassword').value.trim();
+            
+            if(!email || !pass) {
+                alert('Vui lòng điền đầy đủ email và mật khẩu nội bộ!');
+                return;
+            }
+
+            // 1. Kiểm tra tài khoản Admin
+            if (email === 'admin@thandong.com') {
+                if (pass === 'Rich@2007') {
+                    alert('Đăng nhập thành công Quản trị viên!');
+                    window.location.href = 'dashboardadmin.html';
+                } else {
+                    alert('Mật khẩu Admin không chính xác!');
+                }
+                return;
+            }
+
+            // 2. Kiểm tra tài khoản Giáo viên
+            const teacher = globalTeachers.find(t => t.email.toLowerCase() === email);
+            if (teacher) {
+                if (pass === (teacher.pass || '123456')) {
+                    localStorage.setItem('teacher_email', teacher.email);
+                    alert(`Đăng nhập thành công Giáo viên: ${teacher.name}`);
+                    window.location.href = 'teacherlogin.html';
+                } else {
+                    alert('Mật khẩu giáo viên không chính xác!');
+                }
+                return;
+            }
+
+            // 3. Kiểm tra tài khoản Nhân viên
+            const employee = globalEmployees.find(e => e.email.toLowerCase() === email);
+            if (employee) {
+                if (pass === (employee.pass || '123456')) {
+                    localStorage.setItem('currentEmployee', JSON.stringify(employee));
+                    alert(`Đăng nhập thành công Nhân viên: ${employee.name}`);
+                    window.location.href = 'nhanvien.html';
+                } else {
+                    alert('Mật khẩu nhân viên không chính xác!');
+                }
+                return;
+            }
+
+            alert('Email nội bộ không tồn tại trong hệ thống!');
+        } else {
+            // Chế độ Đối tác trường học
+            const select = document.getElementById('selectChiNhanh');
+            const selectedOpt = select.selectedOptions[0];
+            
+            if (!select.value || !selectedOpt) {
+                alert('Vui lòng chọn chi nhánh trường học!');
+                return;
+            }
+
+            const schoolId = selectedOpt.getAttribute('data-id');
+            const pass = document.getElementById('schoolPassword').value.trim();
+
+            if (!pass) {
+                alert('Vui lòng nhập mật khẩu chi nhánh!');
+                return;
+            }
+
+            // Kiểm tra mật khẩu (mặc định 123456 hoặc theo dữ liệu chi nhánh nếu có)
+            const currentBranch = globalBranches.find(b => b && (b.id === schoolId || String(b.id) === String(schoolId)));
+            const validPassword = (currentBranch && currentBranch.password) ? currentBranch.password : '123456';
+
+            if (pass === validPassword || pass === '123456') {
+                localStorage.setItem('current_school_id', schoolId);
+                alert('Đăng nhập thành công vào cổng trường học!');
+                window.location.href = 'th.html';
+            } else {
+                alert('Mật khẩu chi nhánh không chính xác! (Mật khẩu mặc định: 123456)');
+            }
+        }
     }
 </script>
-
 </body>
 </html>
