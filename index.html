@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Thần Đồng - Đăng Nhập</title>
+    <title>CRM Thần Đồng - Đăng Nhập Hệ Thống</title>
     <!-- Font & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -64,7 +64,7 @@
 <div class="login-card">
     <div class="brand-header">
         <div class="brand-title"><i class="fa-solid fa-graduation-cap"></i> THẦN ĐỒNG SIÊU NHÍ </div>
-        <div class="brand-subtitle"> PORTAL SCHOOLING </div>
+        <div class="brand-subtitle"> PORTAL SCHOOLING SYSTEM </div>
     </div>
 
     <div class="error-msg" id="login-error">Tài khoản hoặc mật khẩu không chính xác!</div>
@@ -98,7 +98,7 @@
         const errorDiv = document.getElementById('login-error');
         errorDiv.style.display = 'none';
 
-        // 1. Kiểm tra tài khoản Quản trị viên (Admin)
+        // 1. Kiểm tra tài khoản Quản trị viên (Admin hệ thống)
         if (email === 'admin@thandong.com' && pass === 'Rich@2007') {
             localStorage.setItem('user_role', 'admin');
             localStorage.setItem('admin_email', email);
@@ -106,22 +106,45 @@
             return;
         }
 
-        // 2. Kiểm tra tài khoản Giáo viên (Được tạo từ dashboardadmin.html và lưu trên Firebase)
-        database.ref('teachers').once('value', (snapshot) => {
-            const data = snapshot.val();
-            const teachers = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+        // 2. Kiểm tra danh sách Giáo viên và Nhân viên trên Firebase
+        database.ref('/').once('value', (snapshot) => {
+            const rootData = snapshot.val() || {};
             
-            // Tìm giáo viên khớp email và mật khẩu
+            // Lấy dữ liệu giáo viên
+            const teachersData = rootData.teachers || [];
+            const teachers = Array.isArray(teachersData) ? teachersData.filter(Boolean) : Object.values(teachersData);
             const foundTeacher = teachers.find(t => t.email === email && t.pass === pass);
 
             if (foundTeacher) {
                 localStorage.setItem('user_role', 'teacher');
                 localStorage.setItem('teacher_email', foundTeacher.email);
                 window.location.href = 'teacherlogin.html';
-            } else {
-                errorDiv.innerText = 'Tài khoản hoặc mật khẩu không chính xác!';
-                errorDiv.style.display = 'block';
+                return;
             }
+
+            // Lấy dữ liệu nhân viên
+            const employeesData = rootData.employees || [];
+            const employees = Array.isArray(employeesData) ? employeesData.filter(Boolean) : Object.values(employeesData);
+            const foundEmployee = employees.find(emp => emp.email === email && emp.pass === pass);
+
+            if (foundEmployee) {
+                // Kiểm tra trạng thái nghỉ việc (chặn đăng nhập nếu đã nghỉ việc)
+                if (foundEmployee.status === 'Đã nghỉ việc') {
+                    errorDiv.innerText = 'Tài khoản này đã bị khóa do nhân viên đã nghỉ việc!';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                localStorage.setItem('user_role', 'employee');
+                localStorage.setItem('currentEmployee', JSON.stringify(foundEmployee));
+                window.location.href = 'nhanvien.html';
+                return;
+            }
+
+            // Nếu không khớp với bất kỳ tài khoản nào
+            errorDiv.innerText = 'Tài khoản hoặc mật khẩu không chính xác!';
+            errorDiv.style.display = 'block';
+
         }).catch((err) => {
             console.error(err);
             errorDiv.innerText = 'Lỗi kết nối cơ sở dữ liệu Firebase!';
